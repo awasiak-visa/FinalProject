@@ -1,8 +1,10 @@
-package pl.coderslab;
+package pl.coderslab.review;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import pl.coderslab.boardgame.BoardGame;
+import pl.coderslab.user.User;
 
 @Entity
 @Getter

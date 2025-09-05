@@ -1,4 +1,4 @@
-package pl.coderslab;
+package pl.coderslab.boardgame;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,5 +12,6 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique=true)
     private String name;
 }

@@ -1,11 +1,12 @@
-package pl.coderslab;
+package pl.coderslab.user;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import pl.coderslab.Role;
+import pl.coderslab.boardgame.BoardGame;
 
 import java.util.List;
-
 
 @Entity
 @Getter
@@ -15,7 +16,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String username;
+    @Column(unique = true)
     private String email;
     private String password;
     private Role role;

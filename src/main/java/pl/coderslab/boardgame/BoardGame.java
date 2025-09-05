@@ -1,10 +1,10 @@
-package pl.coderslab;
+package pl.coderslab.boardgame;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import pl.coderslab.Difficulty;
 
-import java.util.List;
 import java.util.Set;
 
 @Entity

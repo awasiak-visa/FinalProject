@@ -1,8 +1,12 @@
-package pl.coderslab;
+package pl.coderslab.play;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import pl.coderslab.Status;
+import pl.coderslab.cafe.Cafe;
+import pl.coderslab.user.User;
+import pl.coderslab.boardgame.BoardGame;
 
 import java.time.LocalDateTime;
 import java.util.List;
