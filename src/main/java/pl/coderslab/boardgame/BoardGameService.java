@@ -45,4 +45,21 @@ public class BoardGameService {
     public void deletePublisher(Long id) {
         publisherRepository.deleteById(id);
     }
+
+    // BoardGame
+    public void createBoardGame(BoardGame boardGame) {
+        boardGameRepository.save(boardGame);
+    }
+    public Optional<BoardGame> readBoardGame(Long id) {
+        return boardGameRepository.findById(id);
+    }
+    public void updateBoardGame(BoardGame boardGame) {
+        boardGameRepository.update(boardGame.getTitle(), boardGame.getPublisher(), boardGame.getDescription(),
+                boardGame.getPlayerCount(), boardGame.getTime(), boardGame.getDifficulty(), boardGame.getCategories(),
+                boardGame.getRating());
+    }
+    public void deleteBoardGame(Long id) {
+        boardGameRepository.deleteById(id);
+    }
+
 }
