@@ -22,35 +22,47 @@ public class BoardGameService {
     public void createCategory(Category category) {
         categoryRepository.save(category);
     }
-    public Optional<Category> readCategory(Long id) {
+    public Optional<Category> readCategoryById(Long id) {
         return categoryRepository.findById(id);
+    }
+    public Optional<Category> readCategoryByName(String name) {
+        return categoryRepository.findByName(name);
     }
     public void updateCategory(Category category) {
         categoryRepository.update(category.getName(), category.getId());
     }
-    public void deleteCategory(Long id) {
+    public void deleteCategoryById(Long id) {
         categoryRepository.deleteById(id);
+    }
+    public void deleteCategoryByName(String name) {
+        categoryRepository.deleteByName(name);
     }
 
     // Publisher
     public void createPublisher(Publisher publisher) {
         publisherRepository.save(publisher);
     }
-    public Optional<Publisher> readPublisher(Long id) {
+    public Optional<Publisher> readPublisherById(Long id) {
         return publisherRepository.findById(id);
+    }
+    public Optional<Publisher> readPublisherByName(String name) {
+        return publisherRepository.findByName(name);
     }
     public void updatePublisher(Publisher publisher) {
         publisherRepository.update(publisher.getName(), publisher.getId());
     }
-    public void deletePublisher(Long id) {
+    public void deletePublisherById(Long id) {
         publisherRepository.deleteById(id);
+    }
+    public void deletePublisherByName(String name) {
+        publisherRepository.deleteByName(name);
     }
 
     // BoardGame
     public void createBoardGame(BoardGame boardGame) {
         boardGameRepository.save(boardGame);
     }
-    public Optional<BoardGame> readBoardGame(Long id) {
+    public Optional<BoardGame> readBoardGameById(Long id) {
         return boardGameRepository.findById(id);
     }
     public void updateBoardGame(BoardGame boardGame) {
@@ -58,7 +70,7 @@ public class BoardGameService {
                 boardGame.getPlayerCount(), boardGame.getTime(), boardGame.getDifficulty(), boardGame.getCategories(),
                 boardGame.getRating());
     }
-    public void deleteBoardGame(Long id) {
+    public void deleteBoardGameById(Long id) {
         boardGameRepository.deleteById(id);
     }
 
