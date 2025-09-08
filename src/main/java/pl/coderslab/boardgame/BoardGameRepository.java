@@ -17,5 +17,5 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
     @Query("update BoardGame b set b.title=?1, b.publisher=?2, b.description=?3, b.playerCount=?4, b.time=?5, " +
             "b.difficulty=?6, b.categories=?7, b.rating=?8 where b.id=?9")
     void update(String title, Publisher publisher, String description, Integer playerCount, Integer time,
-                Difficulty difficulty, Set<Category> categories, Double rating);
+                Difficulty difficulty, Set<Category> categories, Double rating, Long id);
 }

@@ -2,6 +2,7 @@ package pl.coderslab.boardgame;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,15 +23,18 @@ public class BoardGameService {
     public void createCategory(Category category) {
         categoryRepository.save(category);
     }
+
     public Optional<Category> readCategoryById(Long id) {
         return categoryRepository.findById(id);
     }
     public Optional<Category> readCategoryByName(String name) {
         return categoryRepository.findByName(name);
     }
+
     public void updateCategory(Category category) {
         categoryRepository.update(category.getName(), category.getId());
     }
+
     public void deleteCategoryById(Long id) {
         categoryRepository.deleteById(id);
     }
@@ -38,19 +42,26 @@ public class BoardGameService {
         categoryRepository.deleteByName(name);
     }
 
+    public List<Category> readAllCategories() {
+        return categoryRepository.findAll();
+    }
+
     // Publisher
     public void createPublisher(Publisher publisher) {
         publisherRepository.save(publisher);
     }
+
     public Optional<Publisher> readPublisherById(Long id) {
         return publisherRepository.findById(id);
     }
     public Optional<Publisher> readPublisherByName(String name) {
         return publisherRepository.findByName(name);
     }
+
     public void updatePublisher(Publisher publisher) {
         publisherRepository.update(publisher.getName(), publisher.getId());
     }
+
     public void deletePublisherById(Long id) {
         publisherRepository.deleteById(id);
     }
@@ -58,20 +69,31 @@ public class BoardGameService {
         publisherRepository.deleteByName(name);
     }
 
+    public List<Publisher> readAllPublishers() {
+        return publisherRepository.findAll();
+    }
+
     // BoardGame
     public void createBoardGame(BoardGame boardGame) {
         boardGameRepository.save(boardGame);
     }
+
     public Optional<BoardGame> readBoardGameById(Long id) {
         return boardGameRepository.findById(id);
     }
+
     public void updateBoardGame(BoardGame boardGame) {
         boardGameRepository.update(boardGame.getTitle(), boardGame.getPublisher(), boardGame.getDescription(),
                 boardGame.getPlayerCount(), boardGame.getTime(), boardGame.getDifficulty(), boardGame.getCategories(),
-                boardGame.getRating());
+                boardGame.getRating(), boardGame.getId());
     }
+
     public void deleteBoardGameById(Long id) {
         boardGameRepository.deleteById(id);
+    }
+
+    public List<BoardGame> readAllBoardGames() {
+        return boardGameRepository.findAll();
     }
 
 }
