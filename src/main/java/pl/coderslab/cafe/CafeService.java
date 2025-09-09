@@ -32,25 +32,25 @@ public class CafeService {
         return cafeRepository.findAll();
     }
 
-    public Optional<List<Cafe>> findCafeByName(String name) {
+    public Optional<List<Cafe>> findCafesByName(String name) {
         return cafeRepository.findByName(name);
     }
     
-    public Optional<List<Cafe>> findCafeByBoardGameId(Long boardGameId) {
+    public Optional<List<Cafe>> findCafesByBoardGameId(Long boardGameId) {
         return cafeRepository.findByBoardGameId(boardGameId);
     }
-    public Optional<List<Cafe>> findCafeByBoardGamTitleAndPublisherName(String boardGameTitle, String publisherName) {
+    public Optional<List<Cafe>> findCafesByBoardGamTitleAndPublisherName(String boardGameTitle, String publisherName) {
         return cafeRepository.findByBoardGameTitleAndPublisherName(boardGameTitle, publisherName);
     }
 
-    public Optional<List<Cafe>> findCafeByOpeningTimeBefore(LocalTime openingTime) {
+    public Optional<List<Cafe>> findCafesByOpeningTimeBefore(LocalTime openingTime) {
         return cafeRepository.findByOpeningTimeIsBefore(openingTime);
     }
-    public Optional<List<Cafe>> findCafeByClosingTimeAfter(LocalTime closingTime) {
+    public Optional<List<Cafe>> findCafesByClosingTimeAfter(LocalTime closingTime) {
         return cafeRepository.findByClosingTimeIsAfter(closingTime);
     }
     
-    public Optional<List<Cafe>> findCafeByAddressContaining(String address) {
+    public Optional<List<Cafe>> findCafesByAddressContaining(String address) {
         return cafeRepository.findByAddressContainingIgnoreCase(address);
     }
 }
