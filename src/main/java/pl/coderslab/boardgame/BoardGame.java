@@ -10,7 +10,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Table(name = "boardgames")
+@Table(name = "boardgames", uniqueConstraints = @UniqueConstraint(columnNames = {"title", "publisher_id"}))
 public class BoardGame {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
