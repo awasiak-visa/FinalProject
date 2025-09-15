@@ -33,10 +33,23 @@ public interface CafeRepository extends JpaRepository<Cafe, Long> {
 
     Optional<List<Cafe>> findByAddressContainingIgnoreCase(String address);
 
+    @Modifying
+    @Transactional
+    @Query("update Cafe c set c.address=?1 where c.id=?2")
     void updateAddress(String address, Long id);
+
+    @Modifying
+    @Transactional
+    @Query("update Cafe c set c.name=?1 where c.id=?2")
     void updateName(String name, Long id);
+
+    @Modifying
+    @Transactional
+    @Query("update Cafe c set c.openingTime=?1, c.closingTime=?2 where c.id=?3")
     void updateOpeningTimeAndClosingTime(LocalTime openingTime, LocalTime closingTime, Long id);
 
-    void updateBoardGamesAddBoardGameById(Long boardGameId, Long id);
-    void updateBoardGamesRemoveBoardGameById(Long boardGameId, Long id);
+    @Modifying
+    @Transactional
+    @Query("update Cafe c set c.boardGames=?1 where c.id=?2")
+    void updateBoardGames(List<BoardGame> boardGames, Long id);
 }

@@ -66,10 +66,14 @@ public class CafeService {
         cafeRepository.updateOpeningTimeAndClosingTime(openingTime, closingTime, id);
     }
 
-    public void addBoardGameToCafe(Long boardGameId, Long id) {
-        cafeRepository.updateBoardGamesAddBoardGameById(boardGameId, id);
+    public void updateCafeBoardGamesAdd(BoardGame boardGame, Long id) {
+        List<BoardGame> boardGames = cafeRepository.findById(id).get().getBoardGames();
+        boardGames.add(boardGame);
+        cafeRepository.updateBoardGames(boardGames, id);
     }
-    public void removeBoardGameFromCafe(Long boardGameId, Long id) {
-        cafeRepository.updateBoardGamesRemoveBoardGameById(boardGameId, id);
+    public void updateCafeBoardGamesRemove(BoardGame boardGame, Long id) {
+        List<BoardGame> boardGames = cafeRepository.findById(id).get().getBoardGames();
+        boardGames.remove(boardGame);
+        cafeRepository.updateBoardGames(boardGames, id);
     }
 }
