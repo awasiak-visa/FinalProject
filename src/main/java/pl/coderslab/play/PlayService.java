@@ -1,6 +1,5 @@
 package pl.coderslab.play;
 
-import org.springframework.data.jpa.repository.Query;
 import pl.coderslab.Status;
 import pl.coderslab.user.User;
 
@@ -35,29 +34,32 @@ public class PlayService {
         return playRepository.findAll();
     }
 
-    void updatePlayStatus(Long id, Status status) {
-        playRepository.updateStatus(id, status);
+    void updatePlayStatus(Status status, Long id) {
+        playRepository.updateStatus(status, id);
     }
 
-    void updatePlayUsersAddUserById(Long id, Long userId) {
-        playRepository.updateUsersAddUserById(id, userId);
+    void updatePlayUsersAdd(User user, Long id) {
+        List<User> users = playRepository.findById(id).get().getUsers();
+        users.add(user);
+        playRepository.updateUsers(users, id);
     }
-    void updatePlayUsersRemoveUserById(Long id, Long userId) {
-        playRepository.updateUsersRemoveUserById(id, userId);
+    void updatePlayUsersRemove(User user, Long id) {
+        List<User> users = playRepository.findById(id).get().getUsers();
+        users.remove(user);
+        playRepository.updateUsers(users, id);
     }
-
-    Optional<List<User>> findPlaysByUserId(Long id) {
+    Optional<List<Play>> findPlaysByUserId(Long id) {
         return playRepository.findByUserId(id);
     }
 
-    Optional<List<User>> findOpenPlaysByCafeId(Long id, Status OPEN) {
+    Optional<List<Play>> findOpenPlaysByCafeId(Long id, Status OPEN) {
         return playRepository.findOpenByCafeId(id, OPEN);
     }
 
-    Optional<List<User>> findOpenPlaysByBoardGameId(Long id, Status OPEN) {
+    Optional<List<Play>> findOpenPlaysByBoardGameId(Long id, Status OPEN) {
         return playRepository.findOpenByBoardGameId(id, OPEN);
     }
-    Optional<List<User>> findOpenPlaysByBoardGameNameAndPublisherName(String boardGameTitle, String publisherName,
+    Optional<List<Play>> findOpenPlaysByBoardGameNameAndPublisherName(String boardGameTitle, String publisherName,
                                                                       Status OPEN) {
         return playRepository.findOpenByBoardGameTitleAndPublisherName(boardGameTitle, publisherName, OPEN);
     }

@@ -50,38 +50,38 @@ public class UserService {
         return userRepository.findByFavouriteGameTitleAndPublisherName(boardGameTitle, publisherName);
     }
 
-    void updateUsername(String username, Long id) {
+    void updateUserUsername(String username, Long id) {
         userRepository.updateUsername(username, id);
     };
 
-    void updateEmail(String email, Long id) {
+    void updateUserEmail(String email, Long id) {
         userRepository.updateEmail(email, id);
     };
-    void updatePassword(String password, Long id) {
+    void updateUserPassword(String password, Long id) {
         userRepository.updatePassword(password, id);
     };
 
-    void updateRole(Role role, Long id) {
+    void updateUserRole(Role role, Long id) {
         userRepository.updateRole(role, id);
     };
 
-    void updateFavouriteGamesAddBoardGame(BoardGame boardGame, Long id) {
+    void updateUserFavouriteGamesAdd(BoardGame boardGame, Long id) {
         List<BoardGame> favouriteGames = userRepository.findById(id).get().getFavouriteGames();
         favouriteGames.add(boardGame);
         userRepository.updateFavouriteGames(favouriteGames, id);
     };
-    void updateFavouriteGamesRemoveBoardGame(BoardGame boardGame, Long id) {
+    void updateUserFavouriteGamesRemove(BoardGame boardGame, Long id) {
         List<BoardGame> favouriteGames = userRepository.findById(id).get().getFavouriteGames();
         favouriteGames.remove(boardGame);
         userRepository.updateFavouriteGames(favouriteGames, id);
     };
 
-    void updateWantedGamesAddBoardGame(BoardGame boardGame, Long id) {
+    void updateUserWantedGamesAdd(BoardGame boardGame, Long id) {
         List<BoardGame> wantedGames = userRepository.findById(id).get().getWantedGames();
         wantedGames.add(boardGame);
         userRepository.updateWantedGames(wantedGames, id);
     };
-    void updateWantedGamesRemoveBoardGame(BoardGame boardGame, Long id) {
+    void updateUserWantedGamesRemove(BoardGame boardGame, Long id) {
         List<BoardGame> wantedGames = userRepository.findById(id).get().getWantedGames();
         wantedGames.remove(boardGame);
         userRepository.updateWantedGames(wantedGames, id);
