@@ -1,5 +1,6 @@
 package pl.coderslab.cafe;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import pl.coderslab.boardgame.BoardGame;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
 public class CafeDTO {
     private Long id;
     private String name;
