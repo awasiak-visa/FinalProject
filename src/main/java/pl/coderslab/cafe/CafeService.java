@@ -53,4 +53,23 @@ public class CafeService {
     public Optional<List<Cafe>> findCafesByAddressContaining(String address) {
         return cafeRepository.findByAddressContainingIgnoreCase(address);
     }
+
+    public void updateCafeAddress(String address, Long id) {
+        cafeRepository.updateAddress(address, id);
+    }
+
+    public void updateCafeName(String name, Long id) {
+        cafeRepository.updateName(name, id);
+    }
+
+    public void updateCafeOpenHours(LocalTime openingTime, LocalTime closingTime, Long id) {
+        cafeRepository.updateOpeningTimeAndClosingTime(openingTime, closingTime, id);
+    }
+
+    public void addBoardGameToCafe(Long boardGameId, Long id) {
+        cafeRepository.updateBoardGamesAddBoardGameById(boardGameId, id);
+    }
+    public void removeBoardGameFromCafe(Long boardGameId, Long id) {
+        cafeRepository.updateBoardGamesRemoveBoardGameById(boardGameId, id);
+    }
 }

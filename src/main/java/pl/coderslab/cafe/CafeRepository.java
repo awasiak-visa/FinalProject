@@ -32,4 +32,11 @@ public interface CafeRepository extends JpaRepository<Cafe, Long> {
     Optional<List<Cafe>> findByClosingTimeIsAfter(LocalTime closingTime);
 
     Optional<List<Cafe>> findByAddressContainingIgnoreCase(String address);
+
+    void updateAddress(String address, Long id);
+    void updateName(String name, Long id);
+    void updateOpeningTimeAndClosingTime(LocalTime openingTime, LocalTime closingTime, Long id);
+
+    void updateBoardGamesAddBoardGameById(Long boardGameId, Long id);
+    void updateBoardGamesRemoveBoardGameById(Long boardGameId, Long id);
 }
