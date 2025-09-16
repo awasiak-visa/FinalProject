@@ -35,7 +35,7 @@ public class CafeController {
     }
 
     @GetMapping("/{id}")
-    public CafeDTO getCafeById(@PathVariable("id") Long id) {
+    public CafeDTO getCafe(@PathVariable("id") Long id) {
         if (cafeService.readCafeById(id).isPresent()) {
             return convertCafeToDTO(cafeService.readCafeById(id).get());
         } else {
