@@ -124,8 +124,8 @@ public class CafeController {
     }
 
     @PutMapping("/update-address")
-    public void putCafeAddress(@RequestBody String address, @PathVariable("id") Long id) {
-        cafeService.updateCafeAddress(address, id);
+    public void putCafeAddress(@RequestBody Map<String, Object> params) {
+        cafeService.updateCafeAddress((String) params.get("address"), (Long) params.get("id"));
     }
 
     @PutMapping("/update-name")

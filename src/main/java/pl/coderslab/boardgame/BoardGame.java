@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pl.coderslab.Difficulty;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -19,10 +20,12 @@ public class BoardGame {
     @ManyToOne
     private Publisher publisher;
     private String description;
-    private Integer playerCount;
-    private Integer time;
+    private Integer minPlayerCount;
+    private Integer maxPlayerCount;
+    private Integer minTime;
+    private Integer maxTime;
     private Difficulty difficulty;
     @ManyToMany
-    private Set<Category> categories;
+    private List<Category> categories;
     private Double rating;
 }

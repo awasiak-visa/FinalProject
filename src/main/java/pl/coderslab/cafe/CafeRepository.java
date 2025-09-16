@@ -17,7 +17,7 @@ public interface CafeRepository extends JpaRepository<Cafe, Long> {
     @Modifying
     @Transactional
     @Query("update Cafe c set c.name=?1, c.openingTime=?2, c.closingTime=?3, c.address=?4, c.boardGames=?5 " +
-            "where c.id=?9")
+            "where c.id=?6")
     void update(String name, LocalTime openingTime, LocalTime closingTime, String address, List<BoardGame> boardGames,
                 Long id);
 

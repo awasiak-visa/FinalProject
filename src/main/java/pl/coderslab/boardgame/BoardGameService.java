@@ -1,6 +1,7 @@
 package pl.coderslab.boardgame;
 
 import org.springframework.stereotype.Service;
+import pl.coderslab.Difficulty;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,9 +28,6 @@ public class BoardGameService {
     public Optional<Category> readCategoryById(Long id) {
         return categoryRepository.findById(id);
     }
-    public Optional<Category> readCategoryByName(String name) {
-        return categoryRepository.findByName(name);
-    }
 
     public void updateCategory(Category category) {
         categoryRepository.update(category.getName(), category.getId());
@@ -37,9 +35,6 @@ public class BoardGameService {
 
     public void deleteCategoryById(Long id) {
         categoryRepository.deleteById(id);
-    }
-    public void deleteCategoryByName(String name) {
-        categoryRepository.deleteByName(name);
     }
 
     public List<Category> readAllCategories() {
@@ -54,9 +49,6 @@ public class BoardGameService {
     public Optional<Publisher> readPublisherById(Long id) {
         return publisherRepository.findById(id);
     }
-    public Optional<Publisher> readPublisherByName(String name) {
-        return publisherRepository.findByName(name);
-    }
 
     public void updatePublisher(Publisher publisher) {
         publisherRepository.update(publisher.getName(), publisher.getId());
@@ -65,13 +57,11 @@ public class BoardGameService {
     public void deletePublisherById(Long id) {
         publisherRepository.deleteById(id);
     }
-    public void deletePublisherByName(String name) {
-        publisherRepository.deleteByName(name);
-    }
 
     public List<Publisher> readAllPublishers() {
         return publisherRepository.findAll();
     }
+
 
     // BoardGame
     public void createBoardGame(BoardGame boardGame) {
@@ -84,7 +74,8 @@ public class BoardGameService {
 
     public void updateBoardGame(BoardGame boardGame) {
         boardGameRepository.update(boardGame.getTitle(), boardGame.getPublisher(), boardGame.getDescription(),
-                boardGame.getPlayerCount(), boardGame.getTime(), boardGame.getDifficulty(), boardGame.getCategories(),
+                boardGame.getMinPlayerCount(), boardGame.getMaxPlayerCount(), boardGame.getMinTime(),
+                boardGame.getMaxTime(), boardGame.getDifficulty(), boardGame.getCategories(),
                 boardGame.getRating(), boardGame.getId());
     }
 
@@ -96,4 +87,55 @@ public class BoardGameService {
         return boardGameRepository.findAll();
     }
 
+    // finding methods
+    public Optional<List<BoardGame>> findBoardGamesByTitle(String title) {
+        return boardGameRepository.findByTitle(title);
+    }
+
+    public Optional<List<BoardGame>> findBoardGamesByPublisherName(String publisherName) {
+        return boardGameRepository.findByPublisherName(publisherName);
+    }
+
+    public Optional<List<BoardGame>> findBoardGamesByDifficulty(Difficulty difficulty) {
+        return boardGameRepository.findByDifficulty(difficulty);
+    }
+
+    public Optional<List<BoardGame>> findBoardGamesByRatingGreaterThanEqual(Double rating) {
+        return boardGameRepository.findByRatingGreaterThanEqual(rating);
+    }
+
+    public Optional<List<BoardGame>> findBoardGamesByPlayerCountBetweenMinAndMaxPlayerCount(Integer playerCount) {
+        return boardGameRepository.findByPlayerCountBetweenMinAndMaxPlayerCount(playerCount);
+    }
+
+    public Optional<List<BoardGame>> findBoardGamesByMaxTimeLessThanEqual(Integer maxTime) {
+        return boardGameRepository.findByMaxTimeLessThanEqual(maxTime);
+    }
+    public Optional<List<BoardGame>> findBoardGamesByTimeBetweenMinAndMaxTime(Integer time) {
+        return boardGameRepository.findByTimeBetweenMinAndMaxTime(time);
+    }
+
+    public Optional<List<BoardGame>> findBoardGamesByCategoryName(String categoryName) {
+        return boardGameRepository.findByCategoryName(categoryName);
+    }
+
+    // updating methods
+    public void updateBoardGameDescription(String description, Long id) {
+        boardGameRepository.updateDescription(description, id);
+    }
+
+    public void updateBoardGameCategoriesAdd(Category category, Long id) {
+        List<Category> categories = boardGameRepository.findById(id).get().getCategories();
+        categories.add(category);
+        boardGameRepository.updateCategories(categories, id);
+    }
+    public void updateBoardGameCategoriesRemove(Category category, Long id) {
+        List<Category> categories = boardGameRepository.findById(id).get().getCategories();
+        categories.remove(category);
+        boardGameRepository.updateCategories(categories, id);
+    }
+
+    public void updateBoardGameRating(Double rating, Long id) {
+        boardGameRepository.updateRating(rating, id);
+    }
 }
