@@ -33,7 +33,7 @@ public class BoardGameController {
     }
 
     @GetMapping("/categories/{id}")
-    public CategoryDTO getCategoryById(@PathVariable("id") Long id) {
+    public CategoryDTO getCategory(@PathVariable("id") Long id) {
         if (boardGameService.readCategoryById(id).isPresent()) {
             return convertCategoryToDTO(boardGameService.readCategoryById(id).get());
         } else {
@@ -47,7 +47,7 @@ public class BoardGameController {
     }
 
     @DeleteMapping("/categories/{id}")
-    public void deleteCategoryById(@PathVariable("id") Long id) {
+    public void deleteCategory(@PathVariable("id") Long id) {
         boardGameService.deleteCategoryById(id);
     }
 
@@ -73,7 +73,7 @@ public class BoardGameController {
     }
 
     @GetMapping("/publishers/{id}")
-    public PublisherDTO getPublisherById(@PathVariable("id") Long id) {
+    public PublisherDTO getPublisher(@PathVariable("id") Long id) {
         if (boardGameService.readPublisherById(id).isPresent()) {
             return convertPublisherToDTO(boardGameService.readPublisherById(id).get());
         } else {
@@ -87,7 +87,7 @@ public class BoardGameController {
     }
 
     @DeleteMapping("/publishers/{id}")
-    public void deletePublisherById(@PathVariable("id") Long id) {
+    public void deletePublisher(@PathVariable("id") Long id) {
         boardGameService.deletePublisherById(id);
     }
 
@@ -118,7 +118,7 @@ public class BoardGameController {
     }
 
     @GetMapping("/{id}")
-    public BoardGameDTO getBoardGameById(@PathVariable("id") Long id) {
+    public BoardGameDTO getBoardGame(@PathVariable("id") Long id) {
         if (boardGameService.readBoardGameById(id).isPresent()) {
             return convertBoardGameToDTO(boardGameService.readBoardGameById(id).get());
         } else {
@@ -147,7 +147,7 @@ public class BoardGameController {
     }
 
     // find
-    @GetMapping("/find/title/{title}")
+    @GetMapping("/find-title/{title}")
     public List<BoardGameDTO> getBoardGamesByTitle(@PathVariable("title") String title) {
         if (boardGameService.findBoardGamesByTitle(title).isPresent()) {
             return boardGameService.findBoardGamesByTitle(title).get().stream().map(this::convertBoardGameToDTO)
