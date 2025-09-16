@@ -2,13 +2,13 @@ package pl.coderslab.user;
 
 import org.springframework.stereotype.Service;
 import pl.coderslab.Role;
-import pl.coderslab.cafe.Cafe;
-
+import pl.coderslab.boardgame.BoardGame;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
+
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
@@ -45,30 +45,45 @@ public class UserService {
     Optional<List<User>> findUsersByFavouriteGameId(Long id) {
         return userRepository.findByFavouriteGameId(id);
     }
-    Optional<List<Cafe>> findUsersByFavouriteGameTitleAndPublisherName(String boardGameTitle, String publisherName) {
+    Optional<List<User>> findUsersByFavouriteGameTitleAndPublisherName(String boardGameTitle, String publisherName) {
         return userRepository.findByFavouriteGameTitleAndPublisherName(boardGameTitle, publisherName);
     }
 
-    void updateUsername(Long id, String username) {
-        userRepository.updateUsername(id, username);
+    void updateUserUsername(String username, Long id) {
+        userRepository.updateUsername(username, id);
     };
 
-    void updateEmail(Long id, String email) {
-        userRepository.updateEmail(id, email);
+    void updateUserEmail(String email, Long id) {
+        userRepository.updateEmail(email, id);
     };
-    void updatePassword(Long id, String password) {
-        userRepository.updatePassword(id, password);
-    };
-
-    void updateRole(Long id, Role role) {
-        userRepository.updateRole(id, role);
+    void updateUserPassword(String password, Long id) {
+        userRepository.updatePassword(password, id);
     };
 
-    void updateFavouriteGamesAddBoardGameById(Long id, Long boardGameId) {
-        userRepository.updateFavouriteGamesAddBoardGameById(id, boardGameId);
+    void updateUserRole(Role role, Long id) {
+        userRepository.updateRole(role, id);
     };
-    void updateFavouriteGamesRemoveBoardGameById(Long id, Long boardGameId) {
-        userRepository.updateFavouriteGamesRemoveBoardGameById(id, boardGameId);
+
+    void updateUserFavouriteGamesAdd(BoardGame boardGame, Long id) {
+        List<BoardGame> favouriteGames = userRepository.findById(id).get().getFavouriteGames();
+        favouriteGames.add(boardGame);
+        userRepository.updateFavouriteGames(favouriteGames, id);
+    };
+    void updateUserFavouriteGamesRemove(BoardGame boardGame, Long id) {
+        List<BoardGame> favouriteGames = userRepository.findById(id).get().getFavouriteGames();
+        favouriteGames.remove(boardGame);
+        userRepository.updateFavouriteGames(favouriteGames, id);
+    };
+
+    void updateUserWantedGamesAdd(BoardGame boardGame, Long id) {
+        List<BoardGame> wantedGames = userRepository.findById(id).get().getWantedGames();
+        wantedGames.add(boardGame);
+        userRepository.updateWantedGames(wantedGames, id);
+    };
+    void updateUserWantedGamesRemove(BoardGame boardGame, Long id) {
+        List<BoardGame> wantedGames = userRepository.findById(id).get().getWantedGames();
+        wantedGames.remove(boardGame);
+        userRepository.updateWantedGames(wantedGames, id);
     };
 }
 

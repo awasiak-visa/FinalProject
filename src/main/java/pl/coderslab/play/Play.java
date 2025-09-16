@@ -7,10 +7,8 @@ import pl.coderslab.Status;
 import pl.coderslab.cafe.Cafe;
 import pl.coderslab.user.User;
 import pl.coderslab.boardgame.BoardGame;
-
 import java.time.LocalDateTime;
 import java.util.List;
-
 
 @Entity
 @Getter
@@ -28,4 +26,5 @@ public class Play {
     @ManyToMany
     private List<User> users;
     private Status status;
+    private Integer freePlaces;
 }

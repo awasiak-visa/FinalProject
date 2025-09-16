@@ -7,8 +7,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import pl.coderslab.Role;
 import pl.coderslab.boardgame.BoardGame;
-import pl.coderslab.cafe.Cafe;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -29,13 +27,35 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u join u.favouriteGames f where f.id=?1")
     Optional<List<User>> findByFavouriteGameId(Long id);
     @Query("select u from User u join u.favouriteGames f where f.title=?1 and f.publisher.name=?2")
-    Optional<List<Cafe>> findByFavouriteGameTitleAndPublisherName(String boardGameTitle, String publisherName);
+    Optional<List<User>> findByFavouriteGameTitleAndPublisherName(String boardGameTitle, String publisherName);
 
-    void updateUsername(Long id, String username);
-    void updateEmail(Long id, String email);
-    void updatePassword(Long id, String password);
-    void updateRole(Long id, Role role);
+    @Modifying
+    @Transactional
+    @Query("update User u set u.username=?1 where u.id=?2")
+    void updateUsername(String username, Long id);
 
-    void updateFavouriteGamesAddBoardGameById(Long id, Long boardGameId);
-    void updateFavouriteGamesRemoveBoardGameById(Long id, Long boardGameId);
+    @Modifying
+    @Transactional
+    @Query("update User u set u.email=?1 where u.id=?2")
+    void updateEmail(String email, Long id);
+
+    @Modifying
+    @Transactional
+    @Query("update User u set u.password=?1 where u.id=?2")
+    void updatePassword(String password, Long id);
+
+    @Modifying
+    @Transactional
+    @Query("update User u set u.role=?1 where u.id=?2")
+    void updateRole(Role role, Long id);
+
+    @Modifying
+    @Transactional
+    @Query("update User u set u.favouriteGames=?1 where u.id=?2")
+    void updateFavouriteGames(List<BoardGame> favouriteGames, Long id);
+
+    @Modifying
+    @Transactional
+    @Query("update User u set u.wantedGames=?1 where u.id=?2")
+    void updateWantedGames(List<BoardGame> wantedGames, Long id);
 }
