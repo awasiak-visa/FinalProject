@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import pl.coderslab.Role;
 import pl.coderslab.boardgame.BoardGame;
-
 import java.util.List;
 
 @Entity
@@ -23,7 +22,7 @@ public class User {
     private String password;
     private Role role;
     @ManyToMany
-    @JoinTable(name = "users_favorite")
+    @JoinTable(name = "users_favourite")
     private List<BoardGame> favouriteGames;
     @ManyToMany
     @JoinTable(name = "users_wanted")

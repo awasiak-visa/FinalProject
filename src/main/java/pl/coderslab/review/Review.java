@@ -16,6 +16,7 @@ public class Review {
     private Long id;
     @ManyToOne
     private BoardGame boardGame;
+    private Double score;
     private String title;
     private String description;
     @ManyToOne
