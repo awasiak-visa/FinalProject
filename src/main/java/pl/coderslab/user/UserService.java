@@ -5,6 +5,7 @@ import pl.coderslab.Role;
 import pl.coderslab.boardgame.BoardGame;
 import java.util.List;
 import java.util.Optional;
+import org.mindrot.jbcrypt.BCrypt;
 
 @Service
 public class UserService {
@@ -15,7 +16,12 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+
     public void createUser(User user) {
+        user.setPassword(hashPassword(user.getPassword()));
         userRepository.save(user);
     }
 
@@ -24,7 +30,7 @@ public class UserService {
     }
 
     public void updateUser(User user) {
-        userRepository.update(user.getUsername(), user.getEmail(), user.getPassword(), user.getRole(),
+        userRepository.update(user.getUsername(), user.getEmail(), hashPassword(user.getPassword()), user.getRole(),
                 user.getFavouriteGames(), user.getWantedGames(), user.getId());
     }
 
@@ -55,7 +61,7 @@ public class UserService {
     }
 
     void updateUserPassword(String password, Long id) {
-        userRepository.updatePassword(password, id);
+        userRepository.updatePassword(hashPassword(password), id);
     }
 
     void updateUserFavouriteGamesAdd(BoardGame boardGame, Long id) {
