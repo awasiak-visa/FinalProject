@@ -10,7 +10,6 @@ import java.util.List;
 @Setter
 @Builder
 public class BoardGameDTO {
-
     private Long id;
     private String title;
     private String publisherName;

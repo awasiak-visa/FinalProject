@@ -15,7 +15,6 @@ import java.util.List;
 @Setter
 @Table(name = "plays")
 public class Play {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,4 +26,5 @@ public class Play {
     @ManyToMany
     private List<User> users;
     private Status status;
+    private Integer freePlaces;
 }

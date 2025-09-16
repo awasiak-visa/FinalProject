@@ -13,7 +13,6 @@ import java.util.List;
 @Setter
 @Table(name = "boardgames", uniqueConstraints = @UniqueConstraint(columnNames = {"title", "publisher_id"}))
 public class BoardGame {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

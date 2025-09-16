@@ -11,7 +11,6 @@ import java.util.List;
 @Setter
 @Builder
 public class CafeDTO {
-
     private Long id;
     private String name;
     private LocalTime openingTime;

@@ -1,10 +1,12 @@
 package pl.coderslab.play;
 
+import org.springframework.stereotype.Service;
 import pl.coderslab.Status;
 import pl.coderslab.user.User;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class PlayService {
 
     private final PlayRepository playRepository;

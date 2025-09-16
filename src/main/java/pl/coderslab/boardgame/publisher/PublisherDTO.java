@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class PublisherDTO {
-
     private Long id;
     private String name;
 }

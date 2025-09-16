@@ -8,9 +8,10 @@ import lombok.Setter;
 @Setter
 @Builder
 public class ReviewDTO {
-
     private Long id;
+    private String boardGameTitle;
+    private Double score;
     private String title;
     private String description;
-    private String userName;
+    private String username;
 }

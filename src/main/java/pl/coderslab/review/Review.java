@@ -11,12 +11,12 @@ import pl.coderslab.user.User;
 @Setter
 @Table(name = "reviews")
 public class Review {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
     private BoardGame boardGame;
+    private Double score;
     private String title;
     private String description;
     @ManyToOne
