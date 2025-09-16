@@ -3,6 +3,7 @@ package pl.coderslab.cafe;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.boardgame.BoardGame;
 import pl.coderslab.boardgame.BoardGameService;
+
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +79,18 @@ public class CafeController {
         if (cafeService.findCafesByBoardGameId(boardGameId).isPresent()) {
             return cafeService.findCafesByBoardGameId(boardGameId).get().stream().map(this::convertCafeToDTO)
                     .collect(Collectors.toList());
+        } else {
+            throw new RuntimeException("No cafe found.");
+        }
+    }
+
+    @GetMapping("/find-boardGameTitle-publisherName/{boardGameTitle}/{publisherName}")
+    public List<CafeDTO> getCafesByBoardGameTitleAndPublisherName(
+            @PathVariable("boardGameTitle") String boardGameTitle,
+            @PathVariable("publisherName") String publisherName) {
+        if (cafeService.findCafesByBoardGameTitleAndPublisherName(boardGameTitle, publisherName).isPresent()) {
+            return cafeService.findCafesByBoardGameTitleAndPublisherName(boardGameTitle, publisherName)
+                    .get().stream().map(this::convertCafeToDTO).collect(Collectors.toList());
         } else {
             throw new RuntimeException("No cafe found.");
         }

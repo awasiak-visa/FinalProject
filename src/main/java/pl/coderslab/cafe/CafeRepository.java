@@ -24,7 +24,10 @@ public interface CafeRepository extends JpaRepository<Cafe, Long> {
     Optional<List<Cafe>> findByName(String name);
 
     @Query("select c from Cafe c join c.boardGames b where b.id=?1")
-    Optional<List<Cafe>> findByBoardGameId(Long id);
+    Optional<List<Cafe>> findByBoardGameId(Long boardGameId);
+
+    @Query("select c from Cafe c join c.boardGames b where b.title=?1 and b.publisher.name=?2")
+    Optional<List<Cafe>> findByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName);
 
     @Query("select c from Cafe c where c.openingTime<=:time and :time<=c.closingTime")
     Optional<List<Cafe>> findByTimeBetweenOpeningAndClosingTime(LocalTime time);

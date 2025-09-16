@@ -1,6 +1,7 @@
 package pl.coderslab.user;
 
 import org.springframework.stereotype.Service;
+import pl.coderslab.Role;
 import pl.coderslab.boardgame.BoardGame;
 import java.util.List;
 import java.util.Optional;
@@ -40,8 +41,12 @@ public class UserService {
         return userRepository.findByUsernameContainingIgnoreCase(username);
     }
 
-    Optional<List<User>> findUsersByFavouriteGameId(Long id) {
-        return userRepository.findByFavouriteGameId(id);
+    Optional<List<User>> findUsersByFavouriteGameId(Long favouriteGameId) {
+        return userRepository.findByFavouriteGameId(favouriteGameId);
+    }
+
+    Optional<List<User>> findUsersByRole(Role role) {
+        return userRepository.findByRole(role);
     }
 
     // updating methods

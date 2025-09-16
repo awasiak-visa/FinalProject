@@ -38,16 +38,16 @@ public class PlayService {
     }
 
     // finding methods
-    public Optional<List<Play>> findPlaysByUserId(Long id) {
-        return playRepository.findByUserId(id);
+    public Optional<List<Play>> findPlaysByUserId(Long userId) {
+        return playRepository.findByUserId(userId);
     }
 
-    public Optional<List<Play>> findOpenPlaysByCafeId(Long id) {
-        return playRepository.findOpenByCafeId(id);
+    public Optional<List<Play>> findOpenPlaysByCafeId(Long cafeId) {
+        return playRepository.findOpenByCafeId(cafeId);
     }
 
-    public Optional<List<Play>> findOpenPlaysByBoardGameId(Long id) {
-        return playRepository.findOpenByBoardGameId(id);
+    public Optional<List<Play>> findOpenPlaysByBoardGameId(Long boardGameId) {
+        return playRepository.findOpenByBoardGameId(boardGameId);
     }
 
     public Optional<List<Play>> findOpenPlaysByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName) {

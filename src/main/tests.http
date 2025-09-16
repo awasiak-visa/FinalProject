@@ -1,0 +1,20 @@
+###
+GET localhost:8080/boardgames
+
+###
+GET localhost:8080/boardgames/2
+
+###
+DELETE localhost:8080/boardgames/2
+
+###
+POST localhost:8080/boardgames/publishers
+Content-Type: application/json
+
+{
+  "name": "SunGames"
+}
+
+###
+GET localhost:8080/cafes/1
+

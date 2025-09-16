@@ -23,8 +23,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // finding queries
     Optional<List<User>> findByUsernameContainingIgnoreCase(String username);
 
+    Optional<List<User>> findByRole(Role role);
+
     @Query("select u from User u join u.favouriteGames f where f.id=?1")
-    Optional<List<User>> findByFavouriteGameId(Long id);
+    Optional<List<User>> findByFavouriteGameId(Long favouriteGameId);
 
     // updating queries
     @Modifying

@@ -23,13 +23,13 @@ public interface PlayRepository extends JpaRepository<Play, Long> {
 
     // finding queries
     @Query("select p from Play p join p.users u where u.id=?1")
-    Optional<List<Play>> findByUserId(Long id);
+    Optional<List<Play>> findByUserId(Long userId);
 
     @Query("select p from Play p join p.cafe c where c.id=?1 and p.status=0")
-    Optional<List<Play>> findOpenByCafeId(Long id);
+    Optional<List<Play>> findOpenByCafeId(Long cafeId);
 
     @Query("select p from Play p join p.boardGame b where b.id=?1 and p.status=0")
-    Optional<List<Play>> findOpenByBoardGameId(Long id);
+    Optional<List<Play>> findOpenByBoardGameId(Long boardGameId);
 
     @Query("select p from Play p join p.boardGame b where b.title=?1 and b.publisher.name=?2 and p.status=0")
     Optional<List<Play>> findOpenByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName);

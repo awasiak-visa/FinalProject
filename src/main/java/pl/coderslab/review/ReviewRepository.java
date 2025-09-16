@@ -18,12 +18,12 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     void update(BoardGame boardGame, String title, String description, Long id);
 
     // finding queries
-    Optional<List<Review>> findByBoardGameId(Long id);
+    Optional<List<Review>> findByBoardGameId(Long boardGameId);
 
     @Query("select r from Review r join r.boardGame b where b.title=?1 and b.publisher.name=?2")
     Optional<List<Review>> findByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName);
 
-    Optional<List<Review>> findByUserId(Long id);
+    Optional<List<Review>> findByUserId(Long userId);
 
     // updating queries
     @Modifying

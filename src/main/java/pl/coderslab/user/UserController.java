@@ -1,6 +1,7 @@
 package pl.coderslab.user;
 
 import org.springframework.web.bind.annotation.*;
+import pl.coderslab.Role;
 import pl.coderslab.boardgame.BoardGame;
 import pl.coderslab.boardgame.BoardGameService;
 import java.util.List;
@@ -80,6 +81,26 @@ public class UserController {
     public List<UserDTO> getUsersByFavouriteGameId(@PathVariable("favouriteGameId") Long favouriteGameId) {
         if (userService.findUsersByFavouriteGameId(favouriteGameId).isPresent()) {
             return userService.findUsersByFavouriteGameId(favouriteGameId).get().stream().map(this::convertUserToDTO)
+                    .collect(Collectors.toList());
+        } else {
+            throw new RuntimeException("No user found.");
+        }
+    }
+
+    @GetMapping("/role-user")
+    public List<UserDTO> getUsersByRoleUser() {
+        if (userService.findUsersByRole(Role.USER).isPresent()) {
+            return userService.findUsersByRole(Role.USER).get().stream().map(this::convertUserToDTO)
+                    .collect(Collectors.toList());
+        } else {
+            throw new RuntimeException("No user found.");
+        }
+    }
+
+    @GetMapping("/role-admin")
+    public List<UserDTO> getUsersByRoleAdmin() {
+        if (userService.findUsersByRole(Role.ADMIN).isPresent()) {
+            return userService.findUsersByRole(Role.ADMIN).get().stream().map(this::convertUserToDTO)
                     .collect(Collectors.toList());
         } else {
             throw new RuntimeException("No user found.");

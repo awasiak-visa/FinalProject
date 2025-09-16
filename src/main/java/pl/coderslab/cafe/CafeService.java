@@ -45,6 +45,10 @@ public class CafeService {
         return cafeRepository.findByBoardGameId(boardGameId);
     }
 
+    public Optional<List<Cafe>> findCafesByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName) {
+        return cafeRepository.findByBoardGameTitleAndPublisherName(boardGameTitle, publisherName);
+    }
+
     public Optional<List<Cafe>> findCafesByTimeBetweenOpeningAndClosingTime(LocalTime time) {
         return cafeRepository.findByTimeBetweenOpeningAndClosingTime(time);
     }
