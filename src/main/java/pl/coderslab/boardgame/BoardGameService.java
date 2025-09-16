@@ -130,15 +130,19 @@ public class BoardGameService {
     }
 
     public void updateBoardGameCategoriesAdd(Category category, Long id) {
-        List<Category> categories = boardGameRepository.findById(id).get().getCategories();
-        categories.add(category);
-        boardGameRepository.updateCategories(categories, id);
+        if (boardGameRepository.findById(id).isPresent()) {
+            List<Category> categories = boardGameRepository.findById(id).get().getCategories();
+            categories.add(category);
+            boardGameRepository.updateCategories(categories, id);
+        }
     }
 
     public void updateBoardGameCategoriesRemove(Category category, Long id) {
-        List<Category> categories = boardGameRepository.findById(id).get().getCategories();
-        categories.remove(category);
-        boardGameRepository.updateCategories(categories, id);
+        if (boardGameRepository.findById(id).isPresent()) {
+            List<Category> categories = boardGameRepository.findById(id).get().getCategories();
+            categories.remove(category);
+            boardGameRepository.updateCategories(categories, id);
+        }
     }
 
     public void updateBoardGameRating(Double rating, Long id) {

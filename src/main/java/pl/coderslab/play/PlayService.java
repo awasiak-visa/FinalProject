@@ -68,15 +68,19 @@ public class PlayService {
     }
 
     public void updatePlayUsersAdd(User user, Long id) {
-        List<User> users = playRepository.findById(id).get().getUsers();
-        users.add(user);
-        playRepository.updateUsers(users, id);
+        if (playRepository.findById(id).isPresent()) {
+            List<User> users = playRepository.findById(id).get().getUsers();
+            users.add(user);
+            playRepository.updateUsers(users, id);
+        }
     }
 
     public void updatePlayUsersRemove(User user, Long id) {
-        List<User> users = playRepository.findById(id).get().getUsers();
-        users.remove(user);
-        playRepository.updateUsers(users, id);
+        if (playRepository.findById(id).isPresent()) {
+            List<User> users = playRepository.findById(id).get().getUsers();
+            users.remove(user);
+            playRepository.updateUsers(users, id);
+        }
     }
 
     public void updatePlayDateTime(LocalDateTime dateTime, Long id) {

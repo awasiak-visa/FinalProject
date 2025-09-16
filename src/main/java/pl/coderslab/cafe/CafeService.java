@@ -63,14 +63,18 @@ public class CafeService {
     }
 
     public void updateCafeBoardGamesAdd(BoardGame boardGame, Long id) {
-        List<BoardGame> boardGames = cafeRepository.findById(id).get().getBoardGames();
-        boardGames.add(boardGame);
-        cafeRepository.updateBoardGames(boardGames, id);
+        if (cafeRepository.findById(id).isPresent()) {
+            List<BoardGame> boardGames = cafeRepository.findById(id).get().getBoardGames();
+            boardGames.add(boardGame);
+            cafeRepository.updateBoardGames(boardGames, id);
+        }
     }
 
     public void updateCafeBoardGamesRemove(BoardGame boardGame, Long id) {
-        List<BoardGame> boardGames = cafeRepository.findById(id).get().getBoardGames();
-        boardGames.remove(boardGame);
-        cafeRepository.updateBoardGames(boardGames, id);
+        if (cafeRepository.findById(id).isPresent()) {
+            List<BoardGame> boardGames = cafeRepository.findById(id).get().getBoardGames();
+            boardGames.remove(boardGame);
+            cafeRepository.updateBoardGames(boardGames, id);
+        }
     }
 }
