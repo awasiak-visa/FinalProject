@@ -16,22 +16,28 @@ public class ReviewService {
     public void createReview(Review review) {
         reviewRepository.save(review);
     }
+
     public Optional<Review> readReviewById(Long id) {
         return reviewRepository.findById(id);
     }
+
     public void updateReview(Review review) {
         reviewRepository.update(review.getBoardGame(), review.getTitle(), review.getDescription(), review.getId());
     }
+
     public void deleteReviewById(Long id) {
         reviewRepository.deleteById(id);
     }
+
     public List<Review> readAllReviews() {
         return reviewRepository.findAll();
     }
 
+    // finding methods
     public Optional<List<Review>> findReviewsByBoardGameId(Long boardGameId) {
         return reviewRepository.findByBoardGameId(boardGameId);
     }
+
     public Optional<List<Review>> findReviewsByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName) {
         return reviewRepository.findByBoardGameTitleAndPublisherName(boardGameTitle, publisherName);
     }
@@ -39,7 +45,17 @@ public class ReviewService {
     public Optional<List<Review>> findReviewsByUserId(Long userId) {
         return reviewRepository.findByUserId(userId);
     }
-    public Optional<List<Review>> findReviewsByUserUsername(String username) {
-        return reviewRepository.findByUserUsername(username);
+
+    // updating methods
+    public void updateReviewRating(Double rating, Long id) {
+        reviewRepository.updateRating(rating, id);
+    }
+
+    public void updateReviewTitle(String title, Long id) {
+        reviewRepository.updateTitle(title, id);
+    }
+
+    public void updateReviewDescription(String description, Long id) {
+        reviewRepository.updateDescription(description, id);
     }
 }

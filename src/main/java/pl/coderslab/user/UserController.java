@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDTO getUserById(@PathVariable("id") Long id) {
+    public UserDTO getUser(@PathVariable("id") Long id) {
         if (userService.readUserById(id).isPresent()) {
             return convertUserToDTO(userService.readUserById(id).get());
         } else {
