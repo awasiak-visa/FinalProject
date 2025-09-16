@@ -3,6 +3,7 @@ package pl.coderslab.play;
 import org.springframework.stereotype.Service;
 import pl.coderslab.Status;
 import pl.coderslab.user.User;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,34 +37,53 @@ public class PlayService {
         return playRepository.findAll();
     }
 
-    void updatePlayStatus(Status status, Long id) {
+    // finding methods
+    public Optional<List<Play>> findPlaysByUserId(Long id) {
+        return playRepository.findByUserId(id);
+    }
+
+    public Optional<List<Play>> findOpenPlaysByCafeId(Long id) {
+        return playRepository.findOpenByCafeId(id);
+    }
+
+    public Optional<List<Play>> findOpenPlaysByBoardGameId(Long id) {
+        return playRepository.findOpenByBoardGameId(id);
+    }
+
+    public Optional<List<Play>> findOpenPlaysByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName) {
+        return playRepository.findOpenByBoardGameTitleAndPublisherName(boardGameTitle, publisherName);
+    }
+
+    public Optional<List<Play>> findOpenPlaysByFreePlacesGreaterThanEqual(Integer peopleCount) {
+        return playRepository.findOpenByFreePlacesGreaterThanEqual(peopleCount);
+    }
+
+    public Optional<List<Play>> findOpenPlays() {
+        return playRepository.findOpen();
+    }
+
+    // updating methods
+    public void updatePlayStatus(Status status, Long id) {
         playRepository.updateStatus(status, id);
     }
 
-    void updatePlayUsersAdd(User user, Long id) {
+    public void updatePlayUsersAdd(User user, Long id) {
         List<User> users = playRepository.findById(id).get().getUsers();
         users.add(user);
         playRepository.updateUsers(users, id);
     }
-    void updatePlayUsersRemove(User user, Long id) {
+
+    public void updatePlayUsersRemove(User user, Long id) {
         List<User> users = playRepository.findById(id).get().getUsers();
         users.remove(user);
         playRepository.updateUsers(users, id);
     }
-    Optional<List<Play>> findPlaysByUserId(Long id) {
-        return playRepository.findByUserId(id);
+
+    public void updatePlayDateTime(LocalDateTime dateTime, Long id) {
+        playRepository.updateDateTime(dateTime, id);
     }
 
-    Optional<List<Play>> findOpenPlaysByCafeId(Long id, Status OPEN) {
-        return playRepository.findOpenByCafeId(id, OPEN);
+    public void updatePlayFreePlaces(Integer freePlaces, Long id) {
+        playRepository.updateFreePlaces(freePlaces, id);
     }
-
-    Optional<List<Play>> findOpenPlaysByBoardGameId(Long id, Status OPEN) {
-        return playRepository.findOpenByBoardGameId(id, OPEN);
-    }
-    Optional<List<Play>> findOpenPlaysByBoardGameNameAndPublisherName(String boardGameTitle, String publisherName,
-                                                                      Status OPEN) {
-        return playRepository.findOpenByBoardGameTitleAndPublisherName(boardGameTitle, publisherName, OPEN);
-    }
-
 }

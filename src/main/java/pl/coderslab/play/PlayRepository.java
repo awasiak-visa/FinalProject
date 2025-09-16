@@ -25,15 +25,20 @@ public interface PlayRepository extends JpaRepository<Play, Long> {
     @Query("select p from Play p join p.users u where u.id=?1")
     Optional<List<Play>> findByUserId(Long id);
 
-    @Query("select p from Play p join p.cafe c where c.id=?1 and p.status=?2")
-    Optional<List<Play>> findOpenByCafeId(Long id, Status OPEN);
+    @Query("select p from Play p join p.cafe c where c.id=?1 and p.status=0")
+    Optional<List<Play>> findOpenByCafeId(Long id);
 
-    @Query("select p from Play p join p.boardGame b where b.id=?1 and p.status=?2")
-    Optional<List<Play>> findOpenByBoardGameId(Long id, Status OPEN);
+    @Query("select p from Play p join p.boardGame b where b.id=?1 and p.status=0")
+    Optional<List<Play>> findOpenByBoardGameId(Long id);
 
-    @Query("select p from Play p join p.boardGame b where b.title=?1 and b.publisher.name=?2 and p.status=?3")
-    Optional<List<Play>> findOpenByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName,
-                                                                  Status OPEN);
+    @Query("select p from Play p join p.boardGame b where b.title=?1 and b.publisher.name=?2 and p.status=0")
+    Optional<List<Play>> findOpenByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName);
+
+    @Query("select p from Play p where p.freePlaces>=:peopleCount and p.status=0")
+    Optional<List<Play>> findOpenByFreePlacesGreaterThanEqual(Integer peopleCount);
+
+    @Query("select p from Play p where p.status=0")
+    Optional<List<Play>> findOpen();
 
     // updating queries
     @Modifying
@@ -45,4 +50,14 @@ public interface PlayRepository extends JpaRepository<Play, Long> {
     @Transactional
     @Query("update Play p set p.users=?1 where p.id=?2")
     void updateUsers(List<User> users, Long id);
+
+    @Modifying
+    @Transactional
+    @Query("update Play p set p.dateTime=?1 where p.id=?2")
+    void updateDateTime(LocalDateTime dateTime, Long id);
+
+    @Modifying
+    @Transactional
+    @Query("update Play p set p.freePlaces=?1 where p.id=?2")
+    void updateFreePlaces(Integer freePlaces, Long id);
 }

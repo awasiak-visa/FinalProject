@@ -147,7 +147,7 @@ public class BoardGameController {
     }
 
     // find
-    @GetMapping("/find/title/{title}")
+    @GetMapping("/find-title/{title}")
     public List<BoardGameDTO> getBoardGamesByTitle(@PathVariable("title") String title) {
         if (boardGameService.findBoardGamesByTitle(title).isPresent()) {
             return boardGameService.findBoardGamesByTitle(title).get().stream().map(this::convertBoardGameToDTO)
