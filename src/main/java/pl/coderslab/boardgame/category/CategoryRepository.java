@@ -1,4 +1,4 @@
-package pl.coderslab.boardgame;
+package pl.coderslab.boardgame.category;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -6,17 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Repository
-public interface PublisherRepository extends JpaRepository<Publisher, Long> {
-
-    Optional<Publisher> findByName(String name);
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Modifying
     @Transactional
-    @Query("update Publisher p set p.name=?1 where p.id=?2")
+    @Query("update Category c set c.name=?1 where c.id=?2")
     void update(String name, Long id);
-
-    void deleteByName(String name);
 }

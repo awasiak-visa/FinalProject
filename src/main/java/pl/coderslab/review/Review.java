@@ -11,6 +11,7 @@ import pl.coderslab.user.User;
 @Setter
 @Table(name = "reviews")
 public class Review {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

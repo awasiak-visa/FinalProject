@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import pl.coderslab.Role;
 import pl.coderslab.boardgame.BoardGame;
-
 import java.util.List;
 
 @Entity
@@ -13,6 +12,7 @@ import java.util.List;
 @Setter
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

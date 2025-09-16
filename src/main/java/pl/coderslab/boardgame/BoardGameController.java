@@ -2,16 +2,19 @@ package pl.coderslab.boardgame;
 
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.Difficulty;
-
+import pl.coderslab.boardgame.category.Category;
+import pl.coderslab.boardgame.category.CategoryDTO;
+import pl.coderslab.boardgame.publisher.Publisher;
+import pl.coderslab.boardgame.publisher.PublisherDTO;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
 @RestController
 @RequestMapping("/boardgames")
 public class BoardGameController {
+
     private final BoardGameService boardGameService;
 
     public BoardGameController(BoardGameService boardGameService) {

@@ -1,4 +1,4 @@
-package pl.coderslab.boardgame;
+package pl.coderslab.boardgame.category;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CategoryDTO {
+
     private Long id;
     private String name;
 }

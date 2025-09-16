@@ -3,13 +3,12 @@ package pl.coderslab.user;
 import org.springframework.stereotype.Service;
 import pl.coderslab.Role;
 import pl.coderslab.boardgame.BoardGame;
-import pl.coderslab.cafe.Cafe;
-
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
+
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {

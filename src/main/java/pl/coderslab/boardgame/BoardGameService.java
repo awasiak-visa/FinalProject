@@ -2,12 +2,16 @@ package pl.coderslab.boardgame;
 
 import org.springframework.stereotype.Service;
 import pl.coderslab.Difficulty;
-
+import pl.coderslab.boardgame.category.Category;
+import pl.coderslab.boardgame.category.CategoryRepository;
+import pl.coderslab.boardgame.publisher.Publisher;
+import pl.coderslab.boardgame.publisher.PublisherRepository;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class BoardGameService {
+
     private final BoardGameRepository boardGameRepository;
     private final CategoryRepository categoryRepository;
     private final PublisherRepository publisherRepository;
@@ -111,6 +115,7 @@ public class BoardGameService {
     public Optional<List<BoardGame>> findBoardGamesByMaxTimeLessThanEqual(Integer maxTime) {
         return boardGameRepository.findByMaxTimeLessThanEqual(maxTime);
     }
+
     public Optional<List<BoardGame>> findBoardGamesByTimeBetweenMinAndMaxTime(Integer time) {
         return boardGameRepository.findByTimeBetweenMinAndMaxTime(time);
     }
@@ -129,6 +134,7 @@ public class BoardGameService {
         categories.add(category);
         boardGameRepository.updateCategories(categories, id);
     }
+
     public void updateBoardGameCategoriesRemove(Category category, Long id) {
         List<Category> categories = boardGameRepository.findById(id).get().getCategories();
         categories.remove(category);

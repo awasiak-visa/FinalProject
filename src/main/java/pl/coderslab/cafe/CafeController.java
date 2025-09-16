@@ -3,7 +3,6 @@ package pl.coderslab.cafe;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.boardgame.BoardGame;
 import pl.coderslab.boardgame.BoardGameService;
-
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +12,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/cafes")
 public class CafeController {
+
     private final CafeService cafeService;
     private final BoardGameService boardGameService;
 
@@ -62,6 +62,7 @@ public class CafeController {
         }
     }
 
+    // find
     @GetMapping("/find-name/{name}")
     public List<CafeDTO> getCafesByName(@PathVariable("name") String name) {
         if (cafeService.findCafesByName(name).isPresent()) {
@@ -82,31 +83,10 @@ public class CafeController {
         }
     }
 
-    @GetMapping("/find-boardGameTitle/{boardGameTitle}/find-boardGamePublisherName/{boardGamePublisherName}")
-    public List<CafeDTO> getCafesByBoardGameId(@PathVariable("boardGameTitle") String boardGameTitle,
-                                               @PathVariable("boardGamePublisherName") String boardGamePublisherName) {
-        if (cafeService.findCafesByBoardGamTitleAndPublisherName(boardGameTitle, boardGamePublisherName).isPresent()) {
-            return cafeService.findCafesByBoardGamTitleAndPublisherName(boardGameTitle, boardGamePublisherName)
-                    .get().stream().map(this::convertCafeToDTO).collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No cafe found.");
-        }
-    }
-
-    @GetMapping("/find-openingTime/{openingTime}")
-    public List<CafeDTO> getCafesByOpeningTimeBefore(@PathVariable("openingTime") LocalTime openingTime) {
-        if (cafeService.findCafesByOpeningTimeBefore(openingTime).isPresent()) {
-            return cafeService.findCafesByOpeningTimeBefore(openingTime).get().stream().map(this::convertCafeToDTO)
-                    .collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No cafe found.");
-        }
-    }
-
-    @GetMapping("/find-closingTime/{closingTime}")
-    public List<CafeDTO> getCafesByClosingTimeAfter(@PathVariable("closingTime") LocalTime closingTime) {
-        if (cafeService.findCafesByClosingTimeAfter(closingTime).isPresent()) {
-            return cafeService.findCafesByClosingTimeAfter(closingTime).get().stream().map(this::convertCafeToDTO)
+    @GetMapping("/find-time/{time}")
+    public List<CafeDTO> getCafesByTime(@PathVariable("time") LocalTime time) {
+        if (cafeService.findCafesByTimeBetweenOpeningAndClosingTime(time).isPresent()) {
+            return cafeService.findCafesByTimeBetweenOpeningAndClosingTime(time).get().stream().map(this::convertCafeToDTO)
                     .collect(Collectors.toList());
         } else {
             throw new RuntimeException("No cafe found.");
@@ -123,16 +103,7 @@ public class CafeController {
         }
     }
 
-    @PutMapping("/update-address")
-    public void putCafeAddress(@RequestBody Map<String, Object> params) {
-        cafeService.updateCafeAddress((String) params.get("address"), (Long) params.get("id"));
-    }
-
-    @PutMapping("/update-name")
-    public void putCafeName(@RequestBody Map<String, Object> params) {
-        cafeService.updateCafeName((String) params.get("name"), (Long) params.get("id"));
-    }
-
+    // update
     @PutMapping("/update-openHours")
     public void putCafeOpenHours(@RequestBody Map<String, Object> params) {
         cafeService.updateCafeOpenHours((LocalTime) params.get("openingTime"), (LocalTime) params.get("closingTime"),

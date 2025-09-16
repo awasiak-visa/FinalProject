@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import pl.coderslab.boardgame.BoardGame;
-
 import java.time.LocalTime;
 import java.util.List;
 
@@ -12,6 +11,7 @@ import java.util.List;
 @Setter
 @Builder
 public class CafeDTO {
+
     private Long id;
     private String name;
     private LocalTime openingTime;

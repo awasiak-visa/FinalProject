@@ -2,11 +2,11 @@ package pl.coderslab.play;
 
 import pl.coderslab.Status;
 import pl.coderslab.user.User;
-
 import java.util.List;
 import java.util.Optional;
 
 public class PlayService {
+
     private final PlayRepository playRepository;
 
     public PlayService(PlayRepository playRepository) {

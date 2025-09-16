@@ -1,4 +1,4 @@
-package pl.coderslab.boardgame;
+package pl.coderslab.boardgame.category;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,11 +7,12 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "publishers")
-public class Publisher {
+@Table(name = "categories")
+public class Category {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique=true)
+    @Column(unique = true)
     private String name;
 }

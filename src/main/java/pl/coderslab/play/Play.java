@@ -7,16 +7,15 @@ import pl.coderslab.Status;
 import pl.coderslab.cafe.Cafe;
 import pl.coderslab.user.User;
 import pl.coderslab.boardgame.BoardGame;
-
 import java.time.LocalDateTime;
 import java.util.List;
-
 
 @Entity
 @Getter
 @Setter
 @Table(name = "plays")
 public class Play {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

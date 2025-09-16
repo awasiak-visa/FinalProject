@@ -6,12 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import pl.coderslab.Difficulty;
-import pl.coderslab.cafe.Cafe;
-
-import java.time.LocalTime;
+import pl.coderslab.boardgame.category.Category;
+import pl.coderslab.boardgame.publisher.Publisher;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
@@ -25,17 +23,20 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
                 Integer minTime, Integer maxTime, Difficulty difficulty, List<Category> categories, Double rating,
                 Long id);
 
-
     // finding queries
     Optional<List<BoardGame>> findByTitle(String title);
+
     Optional<List<BoardGame>> findByPublisherName(String publisherName);
+
     Optional<List<BoardGame>> findByDifficulty(Difficulty difficulty);
+
     Optional<List<BoardGame>> findByRatingGreaterThanEqual(Double rating);
 
     @Query("select b from BoardGame b where b.minPlayerCount<=:playerCount and b.maxPlayerCount>=:playerCount")
     Optional<List<BoardGame>> findByPlayerCountBetweenMinAndMaxPlayerCount(Integer playerCount);
 
     Optional<List<BoardGame>> findByMaxTimeLessThanEqual(Integer maxTime);
+
     @Query("select b from BoardGame b where b.minTime<=:time and b.maxTime>=:time")
     Optional<List<BoardGame>> findByTimeBetweenMinAndMaxTime(Integer time);
 

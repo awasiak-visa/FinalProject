@@ -7,8 +7,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import pl.coderslab.Role;
 import pl.coderslab.boardgame.BoardGame;
-import pl.coderslab.cafe.Cafe;
-
 import java.util.List;
 import java.util.Optional;
 

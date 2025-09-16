@@ -1,13 +1,12 @@
 package pl.coderslab.review;
 
 import org.springframework.stereotype.Service;
-import pl.coderslab.cafe.Cafe;
-
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ReviewService {
+
     private final ReviewRepository reviewRepository;
 
     public ReviewService(ReviewRepository reviewRepository) {

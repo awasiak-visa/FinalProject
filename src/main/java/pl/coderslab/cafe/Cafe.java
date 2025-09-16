@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import pl.coderslab.boardgame.BoardGame;
-
 import java.time.LocalTime;
 import java.util.List;
 
@@ -13,6 +12,7 @@ import java.util.List;
 @Setter
 @Table(name = "cafes")
 public class Cafe {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

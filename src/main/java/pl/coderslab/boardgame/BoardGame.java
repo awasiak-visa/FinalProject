@@ -4,15 +4,16 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import pl.coderslab.Difficulty;
-
+import pl.coderslab.boardgame.category.Category;
+import pl.coderslab.boardgame.publisher.Publisher;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "boardgames", uniqueConstraints = @UniqueConstraint(columnNames = {"title", "publisher_id"}))
 public class BoardGame {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
