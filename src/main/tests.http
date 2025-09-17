@@ -18,3 +18,20 @@ Content-Type: application/json
 ###
 GET localhost:8080/cafes/1
 
+###
+PUT localhost:8080/boardgames/publishers
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "S"
+}
+
+###
+DELETE localhost:8080/boardgames/categories/25
+
+###
+PUT localhost:8080/users/update/1/username
+Content-Type: text/plain
+
+k

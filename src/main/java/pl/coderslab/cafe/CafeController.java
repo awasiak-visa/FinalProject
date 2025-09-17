@@ -1,13 +1,15 @@
 package pl.coderslab.cafe;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.boardgame.BoardGame;
 import pl.coderslab.boardgame.BoardGameService;
-
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -16,10 +18,12 @@ public class CafeController {
 
     private final CafeService cafeService;
     private final BoardGameService boardGameService;
+    private final Validator validator;
 
-    public CafeController(CafeService cafeService, BoardGameService boardGameService) {
+    public CafeController(CafeService cafeService, BoardGameService boardGameService, Validator validator) {
         this.cafeService = cafeService;
         this.boardGameService = boardGameService;
+        this.validator = validator;
     }
 
     private CafeDTO convertCafeToDTO(Cafe cafe) {
@@ -32,7 +36,12 @@ public class CafeController {
 
     @PostMapping("")
     public void postCafe(@RequestBody Cafe cafe) {
-        cafeService.createCafe(cafe);
+        Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
+        if (constraintViolations.isEmpty()) {
+            cafeService.createCafe(cafe);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @GetMapping("/{id}")
@@ -46,7 +55,12 @@ public class CafeController {
 
     @PutMapping("")
     public void putCafe(@RequestBody Cafe cafe) {
-        cafeService.updateCafe(cafe);
+        Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
+        if (constraintViolations.isEmpty()) {
+            cafeService.updateCafe(cafe);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -117,21 +131,37 @@ public class CafeController {
     }
 
     // update
-    @PutMapping("/update-openHours")
-    public void putCafeOpenHours(@RequestBody Map<String, Object> params) {
-        cafeService.updateCafeOpenHours((LocalTime) params.get("openingTime"), (LocalTime) params.get("closingTime"),
-                (Long) params.get("id"));
+    @PutMapping("/update/{id}/openingTime")
+    public void putCafeOpeningTime(@RequestBody LocalTime openingTime, @PathVariable("id") Long id) {
+        if (cafeService.readCafeById(id).isEmpty()) {
+            throw new RuntimeException("No cafe found.");
+        }
+        cafeService.updateCafeOpeningTime(openingTime, id);
     }
 
-    @PutMapping("/update-addBoardGame")
-    public void putCafeBoardGamesAdd(@RequestBody Map<String, Object> params) {
-        Optional<BoardGame> boardGame = boardGameService.readBoardGameById((Long) params.get("boardGameId"));
-        boardGame.ifPresent(game -> cafeService.updateCafeBoardGamesAdd(game, (Long) params.get("id")));
+    @PutMapping("/update/{id}/closingTime")
+    public void putCafeClosingTime(@RequestBody LocalTime closingTime, @PathVariable("id") Long id) {
+        if (cafeService.readCafeById(id).isEmpty()) {
+            throw new RuntimeException("No cafe found.");
+        }
+        cafeService.updateCafeClosingTime(closingTime, id);
     }
 
-    @PutMapping("/update-removeBoardGame")
-    public void putCafeBoardGamesRemove(@RequestBody Map<String, Object> params) {
-        Optional<BoardGame> boardGame = boardGameService.readBoardGameById((Long) params.get("boardGameId"));
-        boardGame.ifPresent(game -> cafeService.updateCafeBoardGamesRemove(game, (Long) params.get("id")));
+    @PutMapping("/update/{id}/addBoardGame")
+    public void putCafeBoardGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
+        if (cafeService.readCafeById(id).isEmpty()) {
+            throw new RuntimeException("No cafe found.");
+        }
+        Optional<BoardGame> boardGame = boardGameService.readBoardGameById(boardGameId);
+        boardGame.ifPresent(game -> cafeService.updateCafeBoardGamesAdd(game, id));
+    }
+
+    @PutMapping("/update/{id}/removeBoardGame")
+    public void putCafeBoardGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
+        if (cafeService.readCafeById(id).isEmpty()) {
+            throw new RuntimeException("No cafe found.");
+        }
+        Optional<BoardGame> boardGame = boardGameService.readBoardGameById(boardGameId);
+        boardGame.ifPresent(game -> cafeService.updateCafeBoardGamesRemove(game, id));
     }
 }

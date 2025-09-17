@@ -1,12 +1,15 @@
 package pl.coderslab.user;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.Role;
 import pl.coderslab.boardgame.BoardGame;
 import pl.coderslab.boardgame.BoardGameService;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -15,10 +18,12 @@ public class UserController {
 
     private final UserService userService;
     private final BoardGameService boardGameService;
+    private final Validator validator;
 
-    public UserController(UserService userService, BoardGameService boardGameService) {
+    public UserController(UserService userService, BoardGameService boardGameService, Validator validator) {
         this.userService = userService;
         this.boardGameService = boardGameService;
+        this.validator = validator;
     }
 
     private UserDTO convertUserToDTO(User user) {
@@ -35,7 +40,12 @@ public class UserController {
 
     @PostMapping("")
     public void postUser(@RequestBody User user) {
-        userService.createUser(user);
+        Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
+        if (constraintViolations.isEmpty()) {
+            userService.createUser(user);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @GetMapping("/{id}")
@@ -49,7 +59,12 @@ public class UserController {
 
     @PutMapping("")
     public void putUser(@RequestBody User user) {
-        userService.updateUser(user);
+        Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
+        if (constraintViolations.isEmpty()) {
+            userService.updateUser(user);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -108,37 +123,79 @@ public class UserController {
     }
 
     // update
-    @PutMapping("/update-username")
-    public void putUserUsername(@RequestBody Map<String, Object> params) {
-        userService.updateUserUsername((String) params.get("username"), (Long) params.get("id"));
+    @PutMapping("/update/{id}/username")
+    public void putUserUsername(@RequestBody String username, @PathVariable("id") Long id) {
+        if (userService.readUserById(id).isEmpty()) {
+            throw new RuntimeException("No user found.");
+        }
+        User user = new User();
+        user.setUsername(username);
+        Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
+        if (constraintViolations.isEmpty()) {
+            userService.updateUserUsername(username, id);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
-    @PutMapping("/update-password")
-    public void putUserPassword(@RequestBody Map<String, Object> params) {
-        userService.updateUserPassword((String) params.get("password"), (Long) params.get("id"));
+    @PutMapping("/update/{id}/password")
+    public void putUserPassword(@RequestBody String password, @PathVariable("id") Long id) {
+        if (userService.readUserById(id).isEmpty()) {
+            throw new RuntimeException("No user found.");
+        }
+        User user = new User();
+        user.setUsername(password);
+        Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
+        if (constraintViolations.isEmpty()) {
+            userService.updateUserPassword(password, id);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
-    @PutMapping("/update-addFavouriteGame")
-    public void putUserFavouriteGamesAdd(@RequestBody Map<String, Object> params) {
-        Optional<BoardGame> boardGame = boardGameService.readBoardGameById((Long) params.get("boardGameId"));
-        boardGame.ifPresent(game -> userService.updateUserFavouriteGamesAdd(game, (Long) params.get("id")));
+    @PutMapping("/update/{id}/addFavouriteGame")
+    public void putUserFavouriteGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
+        if (userService.readUserById(id).isPresent() && boardGameService.readBoardGameById(boardGameId).isPresent()) {
+            BoardGame boardGame = boardGameService.readBoardGameById(boardGameId).get();
+            if (!userService.readUserById(id).get().getFavouriteGames().contains(boardGame)) {
+                userService.updateUserFavouriteGamesAdd(boardGame, id);
+            } else {
+                throw new RuntimeException("Board game already on favourite list.");
+            }
+        } else {
+            throw new RuntimeException("No user or board game found.");
+        }
     }
 
-    @PutMapping("/update-removeFavouriteGame")
-    public void putUserFavouriteGamesRemove(@RequestBody Map<String, Object> params) {
-        Optional<BoardGame> boardGame = boardGameService.readBoardGameById((Long) params.get("boardGameId"));
-        boardGame.ifPresent(game -> userService.updateUserFavouriteGamesRemove(game, (Long) params.get("id")));
+    @PutMapping("/update/{id}/removeFavouriteGame")
+    public void putUserFavouriteGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
+        if (userService.readUserById(id).isEmpty()) {
+            throw new RuntimeException("No user found.");
+        }
+        Optional<BoardGame> boardGame = boardGameService.readBoardGameById(boardGameId);
+        boardGame.ifPresent(game -> userService.updateUserFavouriteGamesRemove(game, id));
     }
 
-    @PutMapping("/update-addWantedGame")
-    public void putUserWantedGamesAdd(@RequestBody Map<String, Object> params) {
-        Optional<BoardGame> boardGame = boardGameService.readBoardGameById((Long) params.get("boardGameId"));
-        boardGame.ifPresent(game -> userService.updateUserWantedGamesAdd(game, (Long) params.get("id")));
+    @PutMapping("/update/{id}/addWantedGame")
+    public void putUserWantedGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
+        if (userService.readUserById(id).isPresent() && boardGameService.readBoardGameById(boardGameId).isPresent()) {
+            BoardGame boardGame = boardGameService.readBoardGameById(boardGameId).get();
+            if (!userService.readUserById(id).get().getWantedGames().contains(boardGame)) {
+                userService.updateUserWantedGamesAdd(boardGame, id);
+            } else {
+                throw new RuntimeException("Board game already on wanted list.");
+            }
+        } else {
+            throw new RuntimeException("No user or board game found.");
+        }
     }
 
-    @PutMapping("/update-removeWantedGame")
-    public void putUserWantedGamesRemove(@RequestBody Map<String, Object> params) {
-        Optional<BoardGame> boardGame = boardGameService.readBoardGameById((Long) params.get("boardGameId"));
-        boardGame.ifPresent(game -> userService.updateUserWantedGamesRemove(game, (Long) params.get("id")));
+    @PutMapping("/update/{id}/removeWantedGame")
+    public void putUserWantedGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
+        if (userService.readUserById(id).isEmpty()) {
+            throw new RuntimeException("No user found.");
+        }
+        Optional<BoardGame> boardGame = boardGameService.readBoardGameById(boardGameId);
+        boardGame.ifPresent(game -> userService.updateUserWantedGamesRemove(game, id));
     }
 }

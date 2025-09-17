@@ -1,8 +1,11 @@
 package pl.coderslab.review;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -10,9 +13,11 @@ import java.util.stream.Collectors;
 public class ReviewController {
 
     private final ReviewService reviewService;
+    private final Validator validator;
 
-    public ReviewController(ReviewService reviewService) {
+    public ReviewController(ReviewService reviewService, Validator validator) {
         this.reviewService = reviewService;
+        this.validator = validator;
     }
 
     private ReviewDTO convertReviewToDTO(Review review) {
@@ -23,7 +28,12 @@ public class ReviewController {
 
     @PostMapping("")
     public void postReview(@RequestBody Review review) {
-        reviewService.createReview(review);
+        Set<ConstraintViolation<Review>> constraintViolations = validator.validate(review);
+        if (constraintViolations.isEmpty()) {
+            reviewService.createReview(review);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @GetMapping("/{id}")
@@ -37,7 +47,12 @@ public class ReviewController {
 
     @PutMapping("")
     public void putReview(@RequestBody Review review) {
-        reviewService.updateReview(review);
+        Set<ConstraintViolation<Review>> constraintViolations = validator.validate(review);
+        if (constraintViolations.isEmpty()) {
+            reviewService.updateReview(review);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -88,18 +103,34 @@ public class ReviewController {
     }
 
     // update
-    @PutMapping("/update-rating")
-    public void putReviewRating(@RequestBody Map<String, Object> params) {
-        reviewService.updateReviewRating((Integer) params.get("rating"), (Long) params.get("id"));
+    @PutMapping("/update/{id}/rating")
+    public void putReviewRating(@RequestBody Integer rating, @PathVariable("id") Long id) {
+        if (reviewService.readReviewById(id).isEmpty()) {
+            throw new RuntimeException("No review found.");
+        }
+        Review review = new Review();
+        review.setRating(rating);
+        Set<ConstraintViolation<Review>> constraintViolations = validator.validate(review);
+        if (constraintViolations.isEmpty()) {
+            reviewService.updateReviewRating(rating, id);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
-    @PutMapping("/update-title")
-    public void putReviewTitle(@RequestBody Map<String, Object> params) {
-        reviewService.updateReviewTitle((String) params.get("title"), (Long) params.get("id"));
+    @PutMapping("/update/{id}/title")
+    public void putReviewTitle(@RequestBody String title, @PathVariable("id") Long id) {
+        if (reviewService.readReviewById(id).isEmpty()) {
+            throw new RuntimeException("No review found.");
+        }
+        reviewService.updateReviewTitle(title, id);
     }
 
-    @PutMapping("/update-description")
-    public void putReviewDescription(@RequestBody Map<String, Object> params) {
-        reviewService.updateReviewDescription((String) params.get("description"), (Long) params.get("id"));
+    @PutMapping("/update/{id}/description")
+    public void putReviewDescription(@RequestBody String description, @PathVariable("id") Long id) {
+        if (reviewService.readReviewById(id).isEmpty()) {
+            throw new RuntimeException("No review found.");
+        }
+        reviewService.updateReviewDescription(description, id);
     }
 }

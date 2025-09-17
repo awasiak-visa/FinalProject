@@ -1,5 +1,8 @@
 package pl.coderslab.boardgame;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.Difficulty;
 import pl.coderslab.boardgame.category.Category;
@@ -7,8 +10,8 @@ import pl.coderslab.boardgame.category.CategoryDTO;
 import pl.coderslab.boardgame.publisher.Publisher;
 import pl.coderslab.boardgame.publisher.PublisherDTO;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -16,9 +19,11 @@ import java.util.stream.Collectors;
 public class BoardGameController {
 
     private final BoardGameService boardGameService;
+    private final Validator validator;
 
-    public BoardGameController(BoardGameService boardGameService) {
+    public BoardGameController(BoardGameService boardGameService, Validator validator) {
         this.boardGameService = boardGameService;
+        this.validator = validator;
     }
 
 
@@ -29,7 +34,12 @@ public class BoardGameController {
 
     @PostMapping("/categories")
     public void postCategory(@RequestBody Category category) {
-        boardGameService.createCategory(category);
+        Set<ConstraintViolation<Category>> constraintViolations = validator.validate(category);
+        if (constraintViolations.isEmpty()) {
+            boardGameService.createCategory(category);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @GetMapping("/categories/{id}")
@@ -43,7 +53,12 @@ public class BoardGameController {
 
     @PutMapping("/categories")
     public void putCategory(@RequestBody Category category) {
-        boardGameService.updateCategory(category);
+        Set<ConstraintViolation<Category>> constraintViolations = validator.validate(category);
+        if (constraintViolations.isEmpty()) {
+            boardGameService.updateCategory(category);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @DeleteMapping("/categories/{id}")
@@ -69,7 +84,12 @@ public class BoardGameController {
 
     @PostMapping("/publishers")
     public void postPublisher(@RequestBody Publisher publisher) {
-        boardGameService.createPublisher(publisher);
+        Set<ConstraintViolation<Publisher>> constraintViolations = validator.validate(publisher);
+        if (constraintViolations.isEmpty()) {
+            boardGameService.createPublisher(publisher);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @GetMapping("/publishers/{id}")
@@ -83,7 +103,12 @@ public class BoardGameController {
 
     @PutMapping("/publishers")
     public void putPublisher(@RequestBody Publisher publisher) {
-        boardGameService.updatePublisher(publisher);
+        Set<ConstraintViolation<Publisher>> constraintViolations = validator.validate(publisher);
+        if (constraintViolations.isEmpty()) {
+            boardGameService.updatePublisher(publisher);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @DeleteMapping("/publishers/{id}")
@@ -114,7 +139,12 @@ public class BoardGameController {
 
     @PostMapping("")
     public void postBoardGame(@RequestBody BoardGame boardGame) {
-        boardGameService.createBoardGame(boardGame);
+        Set<ConstraintViolation<BoardGame>> constraintViolations = validator.validate(boardGame);
+        if (constraintViolations.isEmpty()) {
+            boardGameService.createBoardGame(boardGame);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @GetMapping("/{id}")
@@ -128,7 +158,12 @@ public class BoardGameController {
 
     @PutMapping("")
     public void putBoardGame(@RequestBody BoardGame boardGame) {
-        boardGameService.updateBoardGame(boardGame);
+        Set<ConstraintViolation<BoardGame>> constraintViolations = validator.validate(boardGame);
+        if (constraintViolations.isEmpty()) {
+            boardGameService.updateBoardGame(boardGame);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -228,22 +263,36 @@ public class BoardGameController {
     }
 
     // update
-    @PutMapping("/update-description")
-    public void putBoardGameDescription(@RequestBody Map<String, Object> params) {
-        boardGameService.updateBoardGameDescription((String) params.get("description"), (Long) params.get("id"));
+    @PutMapping("/update/{id}/description")
+    public void putBoardGameDescription(@RequestBody String description, @PathVariable("id") Long id) {
+        if (boardGameService.readBoardGameById(id).isEmpty()) {
+            throw new RuntimeException("No board game found.");
+        }
+        boardGameService.updateBoardGameDescription(description, id);
     }
 
-    @PutMapping("/update-addCategory")
-    public void putBoardGameCategoriesAdd(@RequestBody Map<String, Object> params) {
-        Optional<Category> category = boardGameService.readCategoryById((Long) params.get("categoryId"));
-        category.ifPresent(boardGameCategory -> boardGameService
-                .updateBoardGameCategoriesAdd(boardGameCategory, (Long) params.get("id")));
+    @PutMapping("/update/{id}/addCategory")
+    public void putBoardGameCategoriesAdd(@RequestBody Long categoryId, @PathVariable("id") Long id) {
+        if (boardGameService.readBoardGameById(id).isPresent()
+                && boardGameService.readCategoryById(categoryId).isPresent()) {
+            Category category = boardGameService.readCategoryById(categoryId).get();
+            if (!boardGameService.readBoardGameById(id).get().getCategories().contains(category)) {
+                boardGameService.updateBoardGameCategoriesAdd(category, id);
+            } else {
+                throw new RuntimeException("Category already added to the board game.");
+            }
+        } else {
+            throw new RuntimeException("No board game or category found.");
+        }
     }
 
-    @PutMapping("/update-removeCategory")
-    public void putBoardGameCategoriesRemove(@RequestBody Map<String, Object> params) {
-        Optional<Category> category = boardGameService.readCategoryById((Long) params.get("categoryId"));
+    @PutMapping("/update/{id}/removeCategory")
+    public void putBoardGameCategoriesRemove(@RequestBody Long categoryId, @PathVariable("id") Long id) {
+        if (boardGameService.readBoardGameById(id).isEmpty()) {
+            throw new RuntimeException("No board game found.");
+        }
+        Optional<Category> category = boardGameService.readCategoryById(categoryId);
         category.ifPresent(boardGameCategory -> boardGameService
-                .updateBoardGameCategoriesRemove(boardGameCategory, (Long) params.get("id")));
+                .updateBoardGameCategoriesRemove(boardGameCategory, id));
     }
 }

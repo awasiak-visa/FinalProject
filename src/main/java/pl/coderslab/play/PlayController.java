@@ -1,11 +1,14 @@
 package pl.coderslab.play;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.user.User;
 import pl.coderslab.user.UserService;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -14,10 +17,12 @@ public class PlayController {
 
     private final PlayService playService;
     private final UserService userService;
+    private final Validator validator;
 
-    public PlayController(PlayService playService, UserService userService) {
+    public PlayController(PlayService playService, UserService userService, Validator validator) {
         this.playService = playService;
         this.userService = userService;
+        this.validator = validator;
     }
 
     private PlayDTO convertPlayToDTO(Play play) {
@@ -32,7 +37,12 @@ public class PlayController {
 
     @PostMapping("")
     public void postPlay(@RequestBody Play play) {
-        playService.createPlay(play);
+        Set<ConstraintViolation<Play>> constraintViolations = validator.validate(play);
+        if (constraintViolations.isEmpty()) {
+            playService.createPlay(play);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @GetMapping("/{id}")
@@ -46,7 +56,12 @@ public class PlayController {
 
     @PutMapping("")
     public void putPlay(@RequestBody Play play) {
-        playService.updatePlay(play);
+        Set<ConstraintViolation<Play>> constraintViolations = validator.validate(play);
+        if (constraintViolations.isEmpty()) {
+            playService.updatePlay(play);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -132,17 +147,27 @@ public class PlayController {
         playService.updatePlayStatusToPast();
     }
 
-    @PutMapping("/update-addUser")
-    public void putPlayUsersAdd(@RequestBody Map<String, Object> params) {
-        Optional<User> user = userService.readUserById((Long) params.get("userId"));
-        user.ifPresent(playUser -> playService
-                .updatePlayUsersAdd(playUser, (Long) params.get("id")));
+    @PutMapping("/update/{id}/addUser")
+    public void putPlayUsersAdd(@RequestBody Long userId, @PathVariable("id") Long id) {
+        if (playService.readPlayById(id).isPresent() && userService.readUserById(userId).isPresent()) {
+            User user = userService.readUserById(userId).get();
+            if (!playService.readPlayById(id).get().getUsers().contains(user)) {
+                playService.updatePlayUsersAdd(user, id);
+            } else {
+                throw new RuntimeException("User already added to the play.");
+            }
+        } else {
+            throw new RuntimeException("No play or user found.");
+        }
     }
 
-    @PutMapping("/update-removeUser")
-    public void putPlayUsersRemove(@RequestBody Map<String, Object> params) {
-        Optional<User> user = userService.readUserById((Long) params.get("userId"));
+    @PutMapping("/update/{id}/removeUser")
+    public void putPlayUsersRemove(@RequestBody Long userId, @PathVariable("id") Long id) {
+        if (playService.readPlayById(id).isEmpty()) {
+            throw new RuntimeException("No play found.");
+        }
+        Optional<User> user = userService.readUserById(userId);
         user.ifPresent(playUser -> playService
-                .updatePlayUsersRemove(playUser, (Long) params.get("id")));
+                .updatePlayUsersRemove(playUser, id));
     }
 }

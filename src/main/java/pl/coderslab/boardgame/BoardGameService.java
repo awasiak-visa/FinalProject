@@ -7,7 +7,6 @@ import pl.coderslab.boardgame.category.CategoryRepository;
 import pl.coderslab.boardgame.publisher.Publisher;
 import pl.coderslab.boardgame.publisher.PublisherRepository;
 import pl.coderslab.review.ReviewRepository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -74,7 +73,13 @@ public class BoardGameService {
     // BoardGame
     public void createBoardGame(BoardGame boardGame) {
         boardGame.setRating(0.0);
-        boardGameRepository.save(boardGame);
+        if (boardGame.getMinPlayerCount() > boardGame.getMaxPlayerCount()) {
+            throw new IllegalArgumentException("Min player count cannot be greater than max player count");
+        } else if (boardGame.getMinTime() > boardGame.getMaxTime()) {
+            throw new IllegalArgumentException("Min time cannot be greater than max time");
+        } else {
+            boardGameRepository.save(boardGame);
+        }
     }
 
     public Optional<BoardGame> readBoardGameById(Long id) {
@@ -82,10 +87,17 @@ public class BoardGameService {
     }
 
     public void updateBoardGame(BoardGame boardGame) {
-        boardGameRepository.update(boardGame.getTitle(), boardGame.getPublisher(), boardGame.getDescription(),
-                boardGame.getMinPlayerCount(), boardGame.getMaxPlayerCount(), boardGame.getMinTime(),
-                boardGame.getMaxTime(), boardGame.getDifficulty(), boardGame.getCategories(),
-                reviewRepository.findAverageRatingByBoardGameId(boardGame.getId()), boardGame.getId());
+        if (boardGame.getMinPlayerCount() > boardGame.getMaxPlayerCount()) {
+            throw new IllegalArgumentException("Min player count cannot be greater than max player count");
+        } else if (boardGame.getMinTime() > boardGame.getMaxTime()) {
+            throw new IllegalArgumentException("Min time cannot be greater than max time");
+        } else {
+            boardGameRepository.update(boardGame.getTitle(), boardGame.getPublisher(), boardGame.getDescription(),
+                    boardGame.getMinPlayerCount(), boardGame.getMaxPlayerCount(), boardGame.getMinTime(),
+                    boardGame.getMaxTime(), boardGame.getDifficulty(), boardGame.getCategories(),
+                    reviewRepository.findAverageRatingByBoardGameId(boardGame.getId()), boardGame.getId());
+
+        }
     }
 
     public void deleteBoardGameById(Long id) {

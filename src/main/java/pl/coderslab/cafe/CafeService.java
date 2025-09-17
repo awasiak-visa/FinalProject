@@ -58,8 +58,12 @@ public class CafeService {
     }
 
     // updating methods
-    public void updateCafeOpenHours(LocalTime openingTime, LocalTime closingTime, Long id) {
-        cafeRepository.updateOpeningTimeAndClosingTime(openingTime, closingTime, id);
+    public void updateCafeOpeningTime(LocalTime openingTime, Long id) {
+        cafeRepository.updateOpeningTime(openingTime, id);
+    }
+
+    public void updateCafeClosingTime(LocalTime closingTime, Long id) {
+        cafeRepository.updateClosingTime(closingTime, id);
     }
 
     public void updateCafeBoardGamesAdd(BoardGame boardGame, Long id) {
