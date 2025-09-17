@@ -3,7 +3,6 @@ package pl.coderslab.review;
 import org.springframework.stereotype.Service;
 import pl.coderslab.boardgame.BoardGameRepository;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReviewService {
@@ -22,11 +21,14 @@ public class ReviewService {
         boardGameRepository.updateRating(averageRating, review.getBoardGame().getId());
     }
 
-    public Optional<Review> readReviewById(Long id) {
-        return reviewRepository.findById(id);
+    public Review readReviewById(Long id) {
+        return reviewRepository.findById(id).orElseThrow(() -> new RuntimeException("Review not found."));
     }
 
     public void updateReview(Review review) {
+        if (reviewRepository.findById(review.getId()).isEmpty()) {
+            throw new RuntimeException("Review not found.");
+        }
         reviewRepository.update(review.getBoardGame(), review.getRating(), review.getTitle(), review.getDescription(),
                 review.getUser(), review.getId());
         Double averageRating = reviewRepository.findAverageRatingByBoardGameId(review.getBoardGame().getId());
@@ -34,42 +36,64 @@ public class ReviewService {
     }
 
     public void deleteReviewById(Long id) {
+        if (reviewRepository.findById(id).isEmpty()) {
+            throw new RuntimeException("Review not found.");
+        }
         reviewRepository.deleteById(id);
     }
 
     public List<Review> readAllReviews() {
+        if (reviewRepository.findAll().isEmpty()) {
+            throw new RuntimeException("Reviews not found.");
+        }
         return reviewRepository.findAll();
     }
 
     // finding methods
-    public Optional<List<Review>> findReviewsByBoardGameId(Long boardGameId) {
+    public List<Review> findReviewsByBoardGameId(Long boardGameId) {
+        if (reviewRepository.findByBoardGameId(boardGameId).isEmpty()) {
+            throw new RuntimeException("Reviews not found.");
+        }
         return reviewRepository.findByBoardGameId(boardGameId);
     }
 
-    public Optional<List<Review>> findReviewsByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName) {
+    public List<Review> findReviewsByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName) {
+        if (reviewRepository.findByBoardGameTitleAndPublisherName(boardGameTitle, publisherName).isEmpty()) {
+            throw new RuntimeException("Reviews not found.");
+        }
         return reviewRepository.findByBoardGameTitleAndPublisherName(boardGameTitle, publisherName);
     }
 
-    public Optional<List<Review>> findReviewsByUserId(Long userId) {
+    public List<Review> findReviewsByUserId(Long userId) {
+        if (reviewRepository.findByUserId(userId).isEmpty()) {
+            throw new RuntimeException("Reviews not found.");
+        }
         return reviewRepository.findByUserId(userId);
     }
 
 
     // updating methods
     public void updateReviewRating(Integer rating, Long id) {
-        reviewRepository.updateRating(rating, id);
-        if (reviewRepository.findById(id).isPresent()) {
-            Double averageRating = reviewRepository.findAverageRatingByBoardGameId(reviewRepository.findById(id).get()
-                    .getBoardGame().getId());
-            boardGameRepository.updateRating(averageRating, reviewRepository.findById(id).get().getBoardGame().getId());
+        if (reviewRepository.findById(id).isEmpty()) {
+            throw new RuntimeException("Review not found.");
         }
+        reviewRepository.updateRating(rating, id);
+        Double averageRating = reviewRepository.findAverageRatingByBoardGameId(reviewRepository.findById(id).get()
+                .getBoardGame().getId());
+        boardGameRepository.updateRating(averageRating, reviewRepository.findById(id).get().getBoardGame().getId());
     }
 
     public void updateReviewTitle(String title, Long id) {
+        if (reviewRepository.findById(id).isEmpty()) {
+            throw new RuntimeException("Review not found.");
+        }
         reviewRepository.updateTitle(title, id);
     }
 
     public void updateReviewDescription(String description, Long id) {
+        if (reviewRepository.findById(id).isEmpty()) {
+            throw new RuntimeException("Review not found.");
+        }
         reviewRepository.updateDescription(description, id);
     }
 }

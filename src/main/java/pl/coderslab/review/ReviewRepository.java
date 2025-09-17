@@ -19,12 +19,12 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     void update(BoardGame boardGame, Integer rating, String title, String description, User user, Long id);
 
     // finding queries
-    Optional<List<Review>> findByBoardGameId(Long boardGameId);
+    List<Review> findByBoardGameId(Long boardGameId);
 
     @Query("select r from Review r join r.boardGame b where b.title=?1 and b.publisher.name=?2")
-    Optional<List<Review>> findByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName);
+    List<Review> findByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName);
 
-    Optional<List<Review>> findByUserId(Long userId);
+    List<Review> findByUserId(Long userId);
 
     @Query("select avg(r.rating) from Review r join r.boardGame b where b.id=?1")
     Double findAverageRatingByBoardGameId(Long boardGameId);

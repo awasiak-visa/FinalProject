@@ -38,11 +38,7 @@ public class ReviewController {
 
     @GetMapping("/{id}")
     public ReviewDTO getReview(@PathVariable("id") Long id) {
-        if (reviewService.readReviewById(id).isPresent()) {
-            return convertReviewToDTO(reviewService.readReviewById(id).get());
-        } else {
-            throw new RuntimeException("No review found.");
-        }
+        return convertReviewToDTO(reviewService.readReviewById(id));
     }
 
     @PutMapping("")
@@ -62,53 +58,34 @@ public class ReviewController {
 
     @GetMapping("")
     public List<ReviewDTO> getAllReviews() {
-        if (!reviewService.readAllReviews().isEmpty()) {
-            return reviewService.readAllReviews().stream().map(this::convertReviewToDTO).collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No review found.");
-        }
+        return reviewService.readAllReviews().stream().map(this::convertReviewToDTO).collect(Collectors.toList());
     }
 
     // find
     @GetMapping("/find-boardGameId/{boardGameId}")
     public List<ReviewDTO> getReviewsByBoardGameId(@PathVariable("boardGameId") Long boardGameId) {
-        if (reviewService.findReviewsByBoardGameId(boardGameId).isPresent()) {
-            return reviewService.findReviewsByBoardGameId(boardGameId).get().stream().map(this::convertReviewToDTO)
-                    .collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No review found.");
-        }
+        return reviewService.findReviewsByBoardGameId(boardGameId).stream().map(this::convertReviewToDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/find-boardGameTitle-publisherName/{boardGameTitle}/{publisherName}")
     public List<ReviewDTO> getReviewsByBoardGameTitleAndPublisherName(
             @PathVariable("boardGameTitle") String boardGameTitle,
             @PathVariable("publisherName") String publisherName) {
-        if (reviewService.findReviewsByBoardGameTitleAndPublisherName(boardGameTitle, publisherName).isPresent()) {
-            return reviewService.findReviewsByBoardGameTitleAndPublisherName(boardGameTitle, publisherName)
-                    .get().stream().map(this::convertReviewToDTO).collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No review found.");
-        }
+        return reviewService.findReviewsByBoardGameTitleAndPublisherName(boardGameTitle, publisherName)
+                .stream().map(this::convertReviewToDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/find-userId/{userId}")
     public List<ReviewDTO> getReviewsByUserId(@PathVariable("userId") Long userId) {
-        if (reviewService.findReviewsByUserId(userId).isPresent()) {
-            return reviewService.findReviewsByUserId(userId).get().stream().map(this::convertReviewToDTO)
-                    .collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No review found.");
-        }
+        return reviewService.findReviewsByUserId(userId).stream().map(this::convertReviewToDTO)
+                .collect(Collectors.toList());
     }
 
     // update
     @PutMapping("/update/{id}/rating")
     public void putReviewRating(@RequestBody Integer rating, @PathVariable("id") Long id) {
-        if (reviewService.readReviewById(id).isEmpty()) {
-            throw new RuntimeException("No review found.");
-        }
-        Review review = new Review();
+        Review review = reviewService.readReviewById(id);
         review.setRating(rating);
         Set<ConstraintViolation<Review>> constraintViolations = validator.validate(review);
         if (constraintViolations.isEmpty()) {
@@ -120,17 +97,25 @@ public class ReviewController {
 
     @PutMapping("/update/{id}/title")
     public void putReviewTitle(@RequestBody String title, @PathVariable("id") Long id) {
-        if (reviewService.readReviewById(id).isEmpty()) {
-            throw new RuntimeException("No review found.");
+        Review review = reviewService.readReviewById(id);
+        review.setTitle(title);
+        Set<ConstraintViolation<Review>> constraintViolations = validator.validate(review);
+        if (constraintViolations.isEmpty()) {
+            reviewService.updateReviewTitle(title, id);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
         }
-        reviewService.updateReviewTitle(title, id);
     }
 
     @PutMapping("/update/{id}/description")
     public void putReviewDescription(@RequestBody String description, @PathVariable("id") Long id) {
-        if (reviewService.readReviewById(id).isEmpty()) {
-            throw new RuntimeException("No review found.");
+        Review review = reviewService.readReviewById(id);
+        review.setDescription(description);
+        Set<ConstraintViolation<Review>> constraintViolations = validator.validate(review);
+        if (constraintViolations.isEmpty()) {
+            reviewService.updateReviewDescription(description, id);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
         }
-        reviewService.updateReviewDescription(description, id);
     }
 }

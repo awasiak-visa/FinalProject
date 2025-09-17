@@ -13,26 +13,19 @@ import java.util.Optional;
 @Repository
 public interface CafeRepository extends JpaRepository<Cafe, Long> {
 
-    @Modifying
-    @Transactional
-    @Query("update Cafe c set c.name=?1, c.openingTime=?2, c.closingTime=?3, c.address=?4, c.boardGames=?5 " +
-            "where c.id=?6")
-    void update(String name, LocalTime openingTime, LocalTime closingTime, String address, List<BoardGame> boardGames,
-                Long id);
-
     // finding queries
-    Optional<List<Cafe>> findByName(String name);
+    List<Cafe> findByName(String name);
 
     @Query("select c from Cafe c join c.boardGames b where b.id=?1")
-    Optional<List<Cafe>> findByBoardGameId(Long boardGameId);
+    List<Cafe> findByBoardGameId(Long boardGameId);
 
     @Query("select c from Cafe c join c.boardGames b where b.title=?1 and b.publisher.name=?2")
-    Optional<List<Cafe>> findByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName);
+    List<Cafe> findByBoardGameTitleAndPublisherName(String boardGameTitle, String publisherName);
 
     @Query("select c from Cafe c where c.openingTime<=:time and :time<=c.closingTime")
-    Optional<List<Cafe>> findByTimeBetweenOpeningAndClosingTime(LocalTime time);
+    List<Cafe> findByTimeBetweenOpeningAndClosingTime(LocalTime time);
 
-    Optional<List<Cafe>> findByAddressContainingIgnoreCase(String address);
+    List<Cafe> findByAddressContainingIgnoreCase(String address);
 
     // updating queries
     @Modifying
@@ -44,9 +37,4 @@ public interface CafeRepository extends JpaRepository<Cafe, Long> {
     @Transactional
     @Query("update Cafe c set c.closingTime=?1 where c.id=?2")
     void updateClosingTime(LocalTime closingTime, Long id);
-
-    @Modifying
-    @Transactional
-    @Query("update Cafe c set c.boardGames=?1 where c.id=?2")
-    void updateBoardGames(List<BoardGame> boardGames, Long id);
 }

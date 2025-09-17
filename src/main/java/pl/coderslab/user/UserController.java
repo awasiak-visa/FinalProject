@@ -8,7 +8,6 @@ import pl.coderslab.Role;
 import pl.coderslab.boardgame.BoardGame;
 import pl.coderslab.boardgame.BoardGameService;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,11 +49,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserDTO getUser(@PathVariable("id") Long id) {
-        if (userService.readUserById(id).isPresent()) {
-            return convertUserToDTO(userService.readUserById(id).get());
-        } else {
-            throw new RuntimeException("No user found.");
-        }
+        return convertUserToDTO(userService.readUserById(id));
     }
 
     @PutMapping("")
@@ -74,61 +69,38 @@ public class UserController {
 
     @GetMapping("")
     public List<UserDTO> getAllUsers() {
-        if (!userService.readAllUsers().isEmpty()) {
-            return userService.readAllUsers().stream().map(this::convertUserToDTO).collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No user found.");
-        }
+        return userService.readAllUsers().stream().map(this::convertUserToDTO).collect(Collectors.toList());
     }
 
     // find
     @GetMapping("/find-username/{username}")
     public List<UserDTO> getUsersByUsernameContaining(@PathVariable("username") String username) {
-        if (userService.findUsersByUsernameContaining(username).isPresent()) {
-            return userService.findUsersByUsernameContaining(username).get().stream().map(this::convertUserToDTO)
-                    .collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No user found.");
-        }
+        return userService.findUsersByUsernameContaining(username).stream().map(this::convertUserToDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/find-favouriteGameId/{favouriteGameId}")
     public List<UserDTO> getUsersByFavouriteGameId(@PathVariable("favouriteGameId") Long favouriteGameId) {
-        if (userService.findUsersByFavouriteGameId(favouriteGameId).isPresent()) {
-            return userService.findUsersByFavouriteGameId(favouriteGameId).get().stream().map(this::convertUserToDTO)
-                    .collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No user found.");
-        }
+        return userService.findUsersByFavouriteGameId(favouriteGameId).stream().map(this::convertUserToDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/role-user")
     public List<UserDTO> getUsersByRoleUser() {
-        if (userService.findUsersByRole(Role.USER).isPresent()) {
-            return userService.findUsersByRole(Role.USER).get().stream().map(this::convertUserToDTO)
-                    .collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No user found.");
-        }
+        return userService.findUsersByRole(Role.ROLE_USER).stream().map(this::convertUserToDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/role-admin")
     public List<UserDTO> getUsersByRoleAdmin() {
-        if (userService.findUsersByRole(Role.ADMIN).isPresent()) {
-            return userService.findUsersByRole(Role.ADMIN).get().stream().map(this::convertUserToDTO)
-                    .collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No user found.");
-        }
+        return userService.findUsersByRole(Role.ROLE_ADMIN).stream().map(this::convertUserToDTO)
+                .collect(Collectors.toList());
     }
 
     // update
     @PutMapping("/update/{id}/username")
     public void putUserUsername(@RequestBody String username, @PathVariable("id") Long id) {
-        if (userService.readUserById(id).isEmpty()) {
-            throw new RuntimeException("No user found.");
-        }
-        User user = new User();
+        User user = userService.readUserById(id);
         user.setUsername(username);
         Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
         if (constraintViolations.isEmpty()) {
@@ -140,10 +112,7 @@ public class UserController {
 
     @PutMapping("/update/{id}/password")
     public void putUserPassword(@RequestBody String password, @PathVariable("id") Long id) {
-        if (userService.readUserById(id).isEmpty()) {
-            throw new RuntimeException("No user found.");
-        }
-        User user = new User();
+        User user = userService.readUserById(id);
         user.setUsername(password);
         Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
         if (constraintViolations.isEmpty()) {
@@ -155,47 +124,25 @@ public class UserController {
 
     @PutMapping("/update/{id}/addFavouriteGame")
     public void putUserFavouriteGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
-        if (userService.readUserById(id).isPresent() && boardGameService.readBoardGameById(boardGameId).isPresent()) {
-            BoardGame boardGame = boardGameService.readBoardGameById(boardGameId).get();
-            if (!userService.readUserById(id).get().getFavouriteGames().contains(boardGame)) {
-                userService.updateUserFavouriteGamesAdd(boardGame, id);
-            } else {
-                throw new RuntimeException("Board game already on favourite list.");
-            }
-        } else {
-            throw new RuntimeException("No user or board game found.");
-        }
+        BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
+        userService.updateUserFavouriteGamesAdd(boardGame, id);
     }
 
     @PutMapping("/update/{id}/removeFavouriteGame")
     public void putUserFavouriteGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
-        if (userService.readUserById(id).isEmpty()) {
-            throw new RuntimeException("No user found.");
-        }
-        Optional<BoardGame> boardGame = boardGameService.readBoardGameById(boardGameId);
-        boardGame.ifPresent(game -> userService.updateUserFavouriteGamesRemove(game, id));
+        BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
+        userService.updateUserFavouriteGamesRemove(boardGame, id);
     }
 
     @PutMapping("/update/{id}/addWantedGame")
     public void putUserWantedGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
-        if (userService.readUserById(id).isPresent() && boardGameService.readBoardGameById(boardGameId).isPresent()) {
-            BoardGame boardGame = boardGameService.readBoardGameById(boardGameId).get();
-            if (!userService.readUserById(id).get().getWantedGames().contains(boardGame)) {
-                userService.updateUserWantedGamesAdd(boardGame, id);
-            } else {
-                throw new RuntimeException("Board game already on wanted list.");
-            }
-        } else {
-            throw new RuntimeException("No user or board game found.");
-        }
+        BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
+        userService.updateUserWantedGamesAdd(boardGame, id);
     }
 
     @PutMapping("/update/{id}/removeWantedGame")
     public void putUserWantedGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
-        if (userService.readUserById(id).isEmpty()) {
-            throw new RuntimeException("No user found.");
-        }
-        Optional<BoardGame> boardGame = boardGameService.readBoardGameById(boardGameId);
-        boardGame.ifPresent(game -> userService.updateUserWantedGamesRemove(game, id));
+        BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
+        userService.updateUserWantedGamesRemove(boardGame, id);
     }
 }

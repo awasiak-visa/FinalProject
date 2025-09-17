@@ -8,7 +8,6 @@ import pl.coderslab.boardgame.BoardGame;
 import pl.coderslab.boardgame.BoardGameService;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,11 +45,7 @@ public class CafeController {
 
     @GetMapping("/{id}")
     public CafeDTO getCafe(@PathVariable("id") Long id) {
-        if (cafeService.readCafeById(id).isPresent()) {
-            return convertCafeToDTO(cafeService.readCafeById(id).get());
-        } else {
-            throw new RuntimeException("No board game found.");
-        }
+        return convertCafeToDTO(cafeService.readCafeById(id));
     }
 
     @PutMapping("")
@@ -70,98 +65,76 @@ public class CafeController {
 
     @GetMapping("")
     public List<CafeDTO> getAllCafes() {
-        if (!cafeService.readAllCafes().isEmpty()) {
-            return cafeService.readAllCafes().stream().map(this::convertCafeToDTO).collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No cafe found.");
-        }
+        return cafeService.readAllCafes().stream().map(this::convertCafeToDTO).collect(Collectors.toList());
     }
 
     // find
     @GetMapping("/find-name/{name}")
     public List<CafeDTO> getCafesByName(@PathVariable("name") String name) {
-        if (cafeService.findCafesByName(name).isPresent()) {
-            return cafeService.findCafesByName(name).get().stream().map(this::convertCafeToDTO)
-                    .collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No cafe found.");
-        }
+        return cafeService.findCafesByName(name).stream().map(this::convertCafeToDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/find-boardGameId/{boardGameId}")
     public List<CafeDTO> getCafesByBoardGameId(@PathVariable("boardGameId") Long boardGameId) {
-        if (cafeService.findCafesByBoardGameId(boardGameId).isPresent()) {
-            return cafeService.findCafesByBoardGameId(boardGameId).get().stream().map(this::convertCafeToDTO)
-                    .collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No cafe found.");
-        }
+        return cafeService.findCafesByBoardGameId(boardGameId).stream().map(this::convertCafeToDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/find-boardGameTitle-publisherName/{boardGameTitle}/{publisherName}")
     public List<CafeDTO> getCafesByBoardGameTitleAndPublisherName(
             @PathVariable("boardGameTitle") String boardGameTitle,
             @PathVariable("publisherName") String publisherName) {
-        if (cafeService.findCafesByBoardGameTitleAndPublisherName(boardGameTitle, publisherName).isPresent()) {
-            return cafeService.findCafesByBoardGameTitleAndPublisherName(boardGameTitle, publisherName)
-                    .get().stream().map(this::convertCafeToDTO).collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No cafe found.");
-        }
+        return cafeService.findCafesByBoardGameTitleAndPublisherName(boardGameTitle, publisherName)
+                .stream().map(this::convertCafeToDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/find-time/{time}")
     public List<CafeDTO> getCafesByTime(@PathVariable("time") LocalTime time) {
-        if (cafeService.findCafesByTimeBetweenOpeningAndClosingTime(time).isPresent()) {
-            return cafeService.findCafesByTimeBetweenOpeningAndClosingTime(time).get().stream().map(this::convertCafeToDTO)
-                    .collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No cafe found.");
-        }
+        return cafeService.findCafesByTimeBetweenOpeningAndClosingTime(time).stream().map(this::convertCafeToDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/find-address/{address}")
     public List<CafeDTO> getCafesByAddressContaining(@PathVariable("address") String address) {
-        if (cafeService.findCafesByAddressContaining(address).isPresent()) {
-            return cafeService.findCafesByAddressContaining(address).get().stream().map(this::convertCafeToDTO)
-                    .collect(Collectors.toList());
-        } else {
-            throw new RuntimeException("No cafe found.");
-        }
+        return cafeService.findCafesByAddressContaining(address).stream().map(this::convertCafeToDTO)
+                .collect(Collectors.toList());
     }
 
     // update
     @PutMapping("/update/{id}/openingTime")
     public void putCafeOpeningTime(@RequestBody LocalTime openingTime, @PathVariable("id") Long id) {
-        if (cafeService.readCafeById(id).isEmpty()) {
-            throw new RuntimeException("No cafe found.");
+        Cafe cafe = cafeService.readCafeById(id);
+        cafe.setOpeningTime(openingTime);
+        Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
+        if (constraintViolations.isEmpty()) {
+            cafeService.updateCafeOpeningTime(openingTime, id);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
         }
-        cafeService.updateCafeOpeningTime(openingTime, id);
     }
 
     @PutMapping("/update/{id}/closingTime")
     public void putCafeClosingTime(@RequestBody LocalTime closingTime, @PathVariable("id") Long id) {
-        if (cafeService.readCafeById(id).isEmpty()) {
-            throw new RuntimeException("No cafe found.");
+        Cafe cafe = cafeService.readCafeById(id);
+        cafe.setClosingTime(closingTime);
+        Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
+        if (constraintViolations.isEmpty()) {
+            cafeService.updateCafeClosingTime(closingTime, id);
+        } else {
+            throw new ConstraintViolationException(constraintViolations);
         }
-        cafeService.updateCafeClosingTime(closingTime, id);
     }
 
     @PutMapping("/update/{id}/addBoardGame")
     public void putCafeBoardGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
-        if (cafeService.readCafeById(id).isEmpty()) {
-            throw new RuntimeException("No cafe found.");
-        }
-        Optional<BoardGame> boardGame = boardGameService.readBoardGameById(boardGameId);
-        boardGame.ifPresent(game -> cafeService.updateCafeBoardGamesAdd(game, id));
+        BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
+        cafeService.updateCafeBoardGamesAdd(boardGame, id);
     }
 
     @PutMapping("/update/{id}/removeBoardGame")
     public void putCafeBoardGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
-        if (cafeService.readCafeById(id).isEmpty()) {
-            throw new RuntimeException("No cafe found.");
-        }
-        Optional<BoardGame> boardGame = boardGameService.readBoardGameById(boardGameId);
-        boardGame.ifPresent(game -> cafeService.updateCafeBoardGamesRemove(game, id));
+        BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
+        cafeService.updateCafeBoardGamesRemove(boardGame, id);
     }
 }

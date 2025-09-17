@@ -21,7 +21,7 @@ public class BoardGame {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Size(min = 1, max = 30)
+    @Size(min = 1, max = 40)
     @NotNull
     private String title;
     @ManyToOne

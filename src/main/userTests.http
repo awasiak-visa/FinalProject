@@ -1,0 +1,114 @@
+###
+POST localhost:8080/users
+Content-Type: application/json
+
+{
+  "username": "user3456",
+  "email": "jusAuser@gmail.com",
+  "password": "userpassword",
+  "role": "ROLE_USER"
+}
+###
+POST localhost:8080/users
+Content-Type: application/json
+
+{
+  "username": "ola",
+  "email": "ola@gmail.com",
+  "password": "olapassword",
+  "role": "ROLE_USER"
+}
+
+###
+GET http://localhost:8080/users/3
+###
+GET http://localhost:8080/users/1
+
+###
+PUT http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "id": 5,
+  "username": "ola857",
+  "email": "ola@gmail.com",
+  "password": "olaNEWpassword",
+  "role": "ROLE_USER"
+}
+###
+PUT http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "id": 1,
+  "username": "ola857",
+  "email": "ola@gmail.com",
+  "password": "olaNEWpassword",
+  "role": "ROLE_USER"
+}
+
+###
+DELETE http://localhost:8080/users/2
+###
+DELETE http://localhost:8080/users/67
+
+###
+GET http://localhost:8080/users
+
+
+// find
+###
+GET http://localhost:8080/users/find-username/admin
+###
+GET http://localhost:8080/users/find-username/bot
+
+###
+GET http://localhost:8080/users/find-favouriteGameId/25
+###
+GET http://localhost:8080/users/find-favouriteGameId/50
+
+###
+GET http://localhost:8080/users/role-user
+
+###
+GET http://localhost:8080/users/role-admin
+
+
+// update
+###
+PUT http://localhost:8080/users/update/3/username
+Content-Type: text/plain
+
+mainadmin
+###
+PUT http://localhost:8080/users/update/4/username
+Content-Type: text/plain
+
+mainadmin
+
+###
+PUT http://localhost:8080/users/update/2/password
+Content-Type: text/plain
+
+longpassword
+###
+PUT http://localhost:8080/users/update/2/password
+Content-Type: text/plain
+
+pass
+
+###
+PUT http://localhost:8080/users/update/4/addFavouriteGame
+Content-Type: application/json
+
+22
+###
+PUT http://localhost:8080/users/update/2/password
+Content-Type: application/json
+
+25
+
+
+
+
+
