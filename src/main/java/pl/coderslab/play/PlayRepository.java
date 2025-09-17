@@ -18,8 +18,10 @@ public interface PlayRepository extends JpaRepository<Play, Long> {
 
     @Modifying
     @Transactional
-    @Query("update Play p set p.boardGame=?1, p.dateTime=?2, p.cafe=?3, p.users=?4, p.status=?5 where p.id=?6")
-    void update(BoardGame boardGame, LocalDateTime dateTime, Cafe cafe, List<User> users, Status status, Long id);
+    @Query("update Play p set p.boardGame=?1, p.dateTime=?2, p.cafe=?3, p.users=?4, p.status=?5, p.freePlaces=?6 " +
+            "where p.id=?7")
+    void update(BoardGame boardGame, LocalDateTime dateTime, Cafe cafe, List<User> users, Status status,
+                Integer freePlaces, Long id);
 
     // finding queries
     @Query("select p from Play p join p.users u where u.id=?1")
@@ -41,6 +43,11 @@ public interface PlayRepository extends JpaRepository<Play, Long> {
     Optional<List<Play>> findOpen();
 
     // updating queries
+    @Modifying
+    @Transactional
+    @Query("update Play p set p.status=2 where p.dateTime<:now")
+    void updateStatusToPast(LocalDateTime now);
+
     @Modifying
     @Transactional
     @Query("update Play p set p.status=?1 where p.id=?2")

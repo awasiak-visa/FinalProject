@@ -1,6 +1,7 @@
 package pl.coderslab.review;
 
 import org.springframework.stereotype.Service;
+import pl.coderslab.boardgame.BoardGameRepository;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,13 +9,17 @@ import java.util.Optional;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final BoardGameRepository boardGameRepository;
 
-    public ReviewService(ReviewRepository reviewRepository) {
+    public ReviewService(ReviewRepository reviewRepository, BoardGameRepository boardGameRepository) {
         this.reviewRepository = reviewRepository;
+        this.boardGameRepository = boardGameRepository;
     }
 
     public void createReview(Review review) {
         reviewRepository.save(review);
+        Double averageRating = reviewRepository.findAverageRatingByBoardGameId(review.getBoardGame().getId());
+        boardGameRepository.updateRating(averageRating, review.getBoardGame().getId());
     }
 
     public Optional<Review> readReviewById(Long id) {
@@ -22,7 +27,10 @@ public class ReviewService {
     }
 
     public void updateReview(Review review) {
-        reviewRepository.update(review.getBoardGame(), review.getTitle(), review.getDescription(), review.getId());
+        reviewRepository.update(review.getBoardGame(), review.getRating(), review.getTitle(), review.getDescription(),
+                review.getUser(), review.getId());
+        Double averageRating = reviewRepository.findAverageRatingByBoardGameId(review.getBoardGame().getId());
+        boardGameRepository.updateRating(averageRating, review.getBoardGame().getId());
     }
 
     public void deleteReviewById(Long id) {
@@ -46,9 +54,15 @@ public class ReviewService {
         return reviewRepository.findByUserId(userId);
     }
 
+
     // updating methods
-    public void updateReviewRating(Double rating, Long id) {
+    public void updateReviewRating(Integer rating, Long id) {
         reviewRepository.updateRating(rating, id);
+        if (reviewRepository.findById(id).isPresent()) {
+            Double averageRating = reviewRepository.findAverageRatingByBoardGameId(reviewRepository.findById(id).get()
+                    .getBoardGame().getId());
+            boardGameRepository.updateRating(averageRating, reviewRepository.findById(id).get().getBoardGame().getId());
+        }
     }
 
     public void updateReviewTitle(String title, Long id) {

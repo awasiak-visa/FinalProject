@@ -6,6 +6,8 @@ import pl.coderslab.boardgame.category.Category;
 import pl.coderslab.boardgame.category.CategoryRepository;
 import pl.coderslab.boardgame.publisher.Publisher;
 import pl.coderslab.boardgame.publisher.PublisherRepository;
+import pl.coderslab.review.ReviewRepository;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -15,12 +17,14 @@ public class BoardGameService {
     private final BoardGameRepository boardGameRepository;
     private final CategoryRepository categoryRepository;
     private final PublisherRepository publisherRepository;
+    private final ReviewRepository reviewRepository;
 
-    public BoardGameService(BoardGameRepository boardGameRepository,
-                            CategoryRepository categoryRepository, PublisherRepository publisherRepository) {
+    public BoardGameService(BoardGameRepository boardGameRepository, CategoryRepository categoryRepository,
+                            PublisherRepository publisherRepository, ReviewRepository reviewRepository) {
         this.boardGameRepository = boardGameRepository;
         this.categoryRepository = categoryRepository;
         this.publisherRepository = publisherRepository;
+        this.reviewRepository = reviewRepository;
     }
 
 
@@ -69,6 +73,7 @@ public class BoardGameService {
 
     // BoardGame
     public void createBoardGame(BoardGame boardGame) {
+        boardGame.setRating(0.0);
         boardGameRepository.save(boardGame);
     }
 
@@ -80,7 +85,7 @@ public class BoardGameService {
         boardGameRepository.update(boardGame.getTitle(), boardGame.getPublisher(), boardGame.getDescription(),
                 boardGame.getMinPlayerCount(), boardGame.getMaxPlayerCount(), boardGame.getMinTime(),
                 boardGame.getMaxTime(), boardGame.getDifficulty(), boardGame.getCategories(),
-                boardGame.getRating(), boardGame.getId());
+                reviewRepository.findAverageRatingByBoardGameId(boardGame.getId()), boardGame.getId());
     }
 
     public void deleteBoardGameById(Long id) {
@@ -143,9 +148,5 @@ public class BoardGameService {
             categories.remove(category);
             boardGameRepository.updateCategories(categories, id);
         }
-    }
-
-    public void updateBoardGameRating(Double rating, Long id) {
-        boardGameRepository.updateRating(rating, id);
     }
 }

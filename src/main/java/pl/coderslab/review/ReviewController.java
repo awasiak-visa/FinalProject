@@ -90,7 +90,7 @@ public class ReviewController {
     // update
     @PutMapping("/update-rating")
     public void putReviewRating(@RequestBody Map<String, Object> params) {
-        reviewService.updateReviewRating((Double) params.get("rating"), (Long) params.get("id"));
+        reviewService.updateReviewRating((Integer) params.get("rating"), (Long) params.get("id"));
     }
 
     @PutMapping("/update-title")

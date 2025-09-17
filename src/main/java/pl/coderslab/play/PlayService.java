@@ -17,6 +17,8 @@ public class PlayService {
     }
 
     public void createPlay(Play play) {
+        play.setStatus(Status.OPEN);
+        play.setFreePlaces(play.getBoardGame().getMaxPlayerCount() - 1);
         playRepository.save(play);
     }
 
@@ -25,8 +27,14 @@ public class PlayService {
     }
 
     public void updatePlay(Play play) {
+        Status status = play.getStatus();
+        if (play.getUsers().size() >= play.getBoardGame().getMaxPlayerCount()) {
+            status = Status.CLOSED;
+        }
         playRepository.update(play.getBoardGame(), play.getDateTime(), play.getCafe(), play.getUsers(),
-                play.getStatus(), play.getId());
+                status, play.getBoardGame().getMaxPlayerCount() - play.getUsers().size(),
+                play.getId());
+        updatePlayStatusToPast();
     }
 
     public void deletePlayById(Long id) {
@@ -63,8 +71,8 @@ public class PlayService {
     }
 
     // updating methods
-    public void updatePlayStatus(Status status, Long id) {
-        playRepository.updateStatus(status, id);
+    public void updatePlayStatusToPast() {
+        playRepository.updateStatusToPast(LocalDateTime.now());
     }
 
     public void updatePlayUsersAdd(User user, Long id) {
@@ -72,6 +80,11 @@ public class PlayService {
             List<User> users = playRepository.findById(id).get().getUsers();
             users.add(user);
             playRepository.updateUsers(users, id);
+            Integer freePlaces = playRepository.findById(id).get().getFreePlaces();
+            playRepository.updateFreePlaces(freePlaces - 1, id);
+            if (playRepository.findById(id).get().getFreePlaces() == 0) {
+                playRepository.updateStatus(Status.CLOSED, id);
+            }
         }
     }
 
@@ -80,10 +93,11 @@ public class PlayService {
             List<User> users = playRepository.findById(id).get().getUsers();
             users.remove(user);
             playRepository.updateUsers(users, id);
+            if (playRepository.findById(id).get().getFreePlaces() == 0) {
+                playRepository.updateStatus(Status.OPEN, id);
+            }
+            Integer freePlaces = playRepository.findById(id).get().getFreePlaces();
+            playRepository.updateFreePlaces(freePlaces + 1, id);
         }
-    }
-
-    public void updatePlayFreePlaces(Integer freePlaces, Long id) {
-        playRepository.updateFreePlaces(freePlaces, id);
     }
 }

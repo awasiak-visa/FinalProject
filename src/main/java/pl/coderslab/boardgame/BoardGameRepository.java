@@ -43,6 +43,7 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
     @Query("select b from BoardGame b join b.categories c where c.name=?1")
     Optional<List<BoardGame>> findByCategoryName(String categoryNames);
 
+
     // updating queries
     @Modifying
     @Transactional

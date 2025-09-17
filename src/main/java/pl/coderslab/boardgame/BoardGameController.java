@@ -246,9 +246,4 @@ public class BoardGameController {
         category.ifPresent(boardGameCategory -> boardGameService
                 .updateBoardGameCategoriesRemove(boardGameCategory, (Long) params.get("id")));
     }
-
-    @PutMapping("/update-rating")
-    public void putBoardGameRating(@RequestBody Map<String, Object> params) {
-        boardGameService.updateBoardGameRating((Double) params.get("rating"), (Long) params.get("id"));
-    }
 }

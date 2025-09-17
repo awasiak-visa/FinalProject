@@ -1,10 +1,8 @@
 package pl.coderslab.play;
 
 import org.springframework.web.bind.annotation.*;
-import pl.coderslab.Status;
 import pl.coderslab.user.User;
 import pl.coderslab.user.UserService;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -130,8 +128,8 @@ public class PlayController {
 
     // update
     @PutMapping("/update-status")
-    public void putPlayStatus(@RequestBody Map<String, Object> params) {
-        playService.updatePlayStatus((Status) params.get("status"), (Long) params.get("id"));
+    public void putPlayStatusToPast() {
+        playService.updatePlayStatusToPast();
     }
 
     @PutMapping("/update-addUser")
@@ -146,10 +144,5 @@ public class PlayController {
         Optional<User> user = userService.readUserById((Long) params.get("userId"));
         user.ifPresent(playUser -> playService
                 .updatePlayUsersRemove(playUser, (Long) params.get("id")));
-    }
-
-    @PutMapping("/update-freePlaces")
-    public void putPlayFreePlaces(@RequestBody Map<String, Object> params) {
-        playService.updatePlayFreePlaces((Integer) params.get("freePlaces"), (Long) params.get("id"));
     }
 }
