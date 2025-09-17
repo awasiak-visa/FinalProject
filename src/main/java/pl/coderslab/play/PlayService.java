@@ -83,10 +83,6 @@ public class PlayService {
         }
     }
 
-    public void updatePlayDateTime(LocalDateTime dateTime, Long id) {
-        playRepository.updateDateTime(dateTime, id);
-    }
-
     public void updatePlayFreePlaces(Integer freePlaces, Long id) {
         playRepository.updateFreePlaces(freePlaces, id);
     }

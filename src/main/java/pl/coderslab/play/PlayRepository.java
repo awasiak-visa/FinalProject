@@ -53,11 +53,6 @@ public interface PlayRepository extends JpaRepository<Play, Long> {
 
     @Modifying
     @Transactional
-    @Query("update Play p set p.dateTime=?1 where p.id=?2")
-    void updateDateTime(LocalDateTime dateTime, Long id);
-
-    @Modifying
-    @Transactional
     @Query("update Play p set p.freePlaces=?1 where p.id=?2")
     void updateFreePlaces(Integer freePlaces, Long id);
 }

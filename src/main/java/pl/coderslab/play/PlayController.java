@@ -148,11 +148,6 @@ public class PlayController {
                 .updatePlayUsersRemove(playUser, (Long) params.get("id")));
     }
 
-    @PutMapping("/update-dateTime")
-    public void putPlayDateTime(@RequestBody Map<String, Object> params) {
-        playService.updatePlayDateTime((LocalDateTime) params.get("dateTime"), (Long) params.get("id"));
-    }
-
     @PutMapping("/update-freePlaces")
     public void putPlayFreePlaces(@RequestBody Map<String, Object> params) {
         playService.updatePlayFreePlaces((Integer) params.get("freePlaces"), (Long) params.get("id"));
