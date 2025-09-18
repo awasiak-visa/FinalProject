@@ -1,0 +1,128 @@
+// hashed ADMIN password: $2a$10$lMkKYhwMhXJyHadqM/8E1uRtrIQXoGQZBzeGB.aLDLFGbpBubtuP2
+###
+POST localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=ADMIN&password=password
+
+###
+POST localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=useruser&password=useruser
+
+###
+POST localhost:8080/logout
+
+###
+POST localhost:8080/users
+Content-Type: application/json
+
+{
+  "username": "useruser",
+  "email": "useruser@gmail.com",
+  "password": "useruser",
+  "role": "ROLE_USER"
+}
+###
+POST localhost:8080/users
+Content-Type: application/json
+
+{
+  "username": "ola",
+  "email": "ola@gmail.com",
+  "password": "olapassword",
+  "role": "ROLE_USER"
+}
+
+###
+GET http://localhost:8080/users/4
+###
+GET http://localhost:8080/users/1
+
+###
+PUT http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "id": 2,
+  "username": "mainadmin",
+  "email": "adm@gmail.com",
+  "password": "adminpassword",
+  "role": "ROLE_ADMIN"
+}
+###
+PUT http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "id": 1,
+  "username": "ola857",
+  "email": "ola@gmail.com",
+  "password": "olaNEWpassword",
+  "role": "ROLE_USER"
+}
+
+###
+DELETE http://localhost:8080/users/67
+
+###
+GET http://localhost:8080/users
+
+
+// find
+###
+GET http://localhost:8080/users/find-username/admin
+###
+GET http://localhost:8080/users/find-username/bot
+
+###
+GET http://localhost:8080/users/find-favouriteGameId/5
+###
+GET http://localhost:8080/users/find-favouriteGameId/50
+
+###
+GET http://localhost:8080/users/role-user
+
+###
+GET http://localhost:8080/users/role-admin
+
+
+// update
+###
+PUT http://localhost:8080/users/update/4/username
+Content-Type: text/plain
+
+useruser
+###
+PUT http://localhost:8080/users/update/1/username
+Content-Type: text/plain
+
+mainadmin
+
+###
+PUT http://localhost:8080/users/update/4/password
+Content-Type: text/plain
+
+useruser
+###
+PUT http://localhost:8080/users/update/2/password
+Content-Type: text/plain
+
+pass
+
+###
+PUT http://localhost:8080/users/update/4/addFavouriteGame
+Content-Type: application/json
+
+5
+###
+PUT http://localhost:8080/users/update/4/removeFavouriteGame
+Content-Type: application/json
+
+5
+
+
+
+
+

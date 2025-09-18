@@ -1,0 +1,109 @@
+###
+POST localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=ADMIN&password=password
+
+###
+POST localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=useruser&password=useruser
+
+###
+POST localhost:8080/logout
+
+###
+POST localhost:8080/reviews
+Content-Type: application/json
+
+{
+  "boardGame": {
+    "id": 5,
+    "title": "In the air",
+    "publisherName": "MB",
+    "description": "land the plane",
+    "minPlayerCount": 2,
+    "maxPlayerCount": 2,
+    "minTime": 30,
+    "maxTime": 50,
+    "difficulty": "NORMAL",
+    "categoriesNames": [],
+    "rating": 0.0
+  },
+  "rating": 8,
+  "user": {
+    "id": 4,
+    "username": "useruser",
+    "email": "useruser@gmail.com",
+    "password": "useruser",
+    "role": "ROLE_USER",
+    "favouriteGamesInfo": [],
+    "wantedGamesInfo": []
+  }
+}
+
+###
+GET localhost:8080/reviews/1
+
+###
+PUT localhost:8080/reviews
+Content-Type: application/json
+
+{
+  "id": 1,
+  "boardGame": {
+    "id": 5,
+    "title": "In the air",
+    "publisherName": "MB",
+    "description": "land the plane",
+    "minPlayerCount": 2,
+    "maxPlayerCount": 2,
+    "minTime": 30,
+    "maxTime": 50,
+    "difficulty": "NORMAL",
+    "categoriesNames": [],
+    "rating": 0.0
+  },
+  "rating": 9,
+  "user": {
+    "id": 1,
+    "username": "ADMIN",
+    "email": "admin@gmail.com",
+    "password": "password",
+    "role": "ROLE_ADMIN",
+    "favouriteGamesInfo": [],
+    "wantedGamesInfo": []
+  }
+}
+
+###
+DELETE localhost:8080/reviews/2
+
+###
+GET localhost:8080/reviews
+
+###
+GET localhost:8080/reviews/find-boardGameId/5
+
+###
+GET localhost:8080/reviews/find-boardGameTitle-publisherName/In the air/MB
+
+###
+GET localhost:8080/reviews/find-userId/1
+
+###
+PUT localhost:8080/reviews/update/5/rating
+Content-Type: application/json
+
+5
+###
+PUT localhost:8080/reviews/update/1/title
+Content-Type: text/plain
+
+"Game for the whole family"
+###
+PUT localhost:8080/reviews/update/1/description
+Content-Type: text/plain
+
+Fun and easy euro game for family.

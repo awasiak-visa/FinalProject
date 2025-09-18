@@ -1,0 +1,131 @@
+###
+POST localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=ADMIN&password=password
+
+###
+POST localhost:8080/logout
+
+###
+POST localhost:8080/cafes
+Content-Type: application/json
+
+{
+  "name": "Parado Cafe",
+  "openingTime": "12:00",
+  "closingTime": "21:00",
+  "address": "ul.Kościuszki 17, Kraków"
+}
+###
+POST localhost:8080/cafes
+Content-Type: application/json
+
+{
+  "name": "GameCafe",
+  "openingTime": "12:00",
+  "closingTime": "21:00",
+  "address": "ul.Kościuszki 17, Kraków"
+}
+
+###
+GET localhost:8080/cafes/5
+###
+GET localhost:8080/cafes/100
+
+###
+PUT localhost:8080/cafes
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Paradox",
+  "openingTime": "12:30",
+  "closingTime": "21:30",
+  "address": "ul.Kościuszki 17, Kraków"
+}
+###
+PUT localhost:8080/cafes
+Content-Type: application/json
+
+{
+  "name": "GameCafe",
+  "openingTime": "12:00"
+}
+
+###
+DELETE localhost:8080/cafes/4
+###
+DELETE localhost:8080/cafes/290
+
+###
+GET localhost:8080/cafes
+
+###
+GET localhost:8080/cafes/find-name/Paradox
+###
+GET localhost:8080/cafes/find-name/cafee
+
+###
+GET localhost:8080/cafes/find-boardGameId/1
+###
+GET localhost:8080/cafes/find-boardGameId/110
+
+###
+GET localhost:8080/cafes/find-boardGameTitle-publisherName/checkers/MB
+###
+GET localhost:8080/cafes/find-boardGameTitle-publisherName/checkers/1
+
+###
+GET localhost:8080/cafes/find-time/15:00
+###
+GET localhost:8080/cafes/find-time/23:00
+
+###
+GET localhost:8080/cafes/find-address/Krak
+###
+GET localhost:8080/cafes/find-address/Akacjowa
+
+###
+PUT localhost:8080/cafes/update/1/openingTime
+Content-Type: application/json
+
+"14:00"
+###
+PUT localhost:8080/cafes/update/57/openingTime
+Content-Type: application/json
+
+"14:00"
+
+###
+PUT localhost:8080/cafes/update/1/closingTime
+Content-Type: application/json
+
+"22:00"
+###
+PUT localhost:8080/cafes/update/88/closingTime
+Content-Type: application/json
+
+"22:00"
+
+###
+PUT localhost:8080/cafes/update/5/addBoardGame
+Content-Type: application/json
+
+3
+###
+PUT localhost:8080/cafes/update/1/addBoardGame
+Content-Type: application/json
+
+5
+
+###
+PUT localhost:8080/cafes/update/1/removeBoardGame
+Content-Type: application/json
+
+1
+###
+PUT localhost:8080/cafes/update/1/removeBoardGame
+Content-Type: application/json
+
+3
