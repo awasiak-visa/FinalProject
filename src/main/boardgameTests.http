@@ -1,37 +1,248 @@
 ###
-GET localhost:8080/boardgames
+POST localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=ADMIN&password=password
 
 ###
-GET localhost:8080/boardgames/2
+POST localhost:8080/logout
+
+// categories
+###
+POST localhost:8080/boardgames/categories
+Content-Type: application/json
+
+{
+  "name": "adventure"
+}
+###
+POST localhost:8080/boardgames/categories
+Content-Type: application/json
+
+{
+  "name": "ameri"
+}
 
 ###
-DELETE localhost:8080/boardgames/2
+GET localhost:8080/boardgames/categories/3
+###
+GET localhost:8080/boardgames/categories/35
 
+###
+PUT localhost:8080/boardgames/categories
+Content-Type: application/json
+
+{
+  "id": 2,
+  "name": "puzzles"
+}
+###
+PUT localhost:8080/boardgames/categories
+Content-Type: application/json
+
+{
+  "id": 2,
+  "name": "am"
+}
+
+###
+DELETE localhost:8080/boardgames/categories/1
+###
+DELETE localhost:8080/boardgames/categories/44
+
+###
+GET localhost:8080/boardgames/categories
+
+
+// publishers
 ###
 POST localhost:8080/boardgames/publishers
 Content-Type: application/json
 
 {
-  "name": "SunGames"
+  "name": "MB"
+}
+###
+POST localhost:8080/boardgames/publishers
+Content-Type: application/json
+
+{
+  "name": "h"
 }
 
 ###
-GET localhost:8080/cafes/1
+GET localhost:8080/boardgames/publishers/3
+###
+GET localhost:8080/boardgames/publishers/35
 
 ###
 PUT localhost:8080/boardgames/publishers
 Content-Type: application/json
 
 {
-  "id": 1,
-  "name": "S"
+  "id": 2,
+  "name": "LuckyDucky"
+}
+###
+PUT localhost:8080/boardgames/publishers
+Content-Type: application/json
+
+{
+  "id": 2,
+  "name": "MB"
 }
 
 ###
-DELETE localhost:8080/boardgames/categories/25
+DELETE localhost:8080/boardgames/publishers/4
+###
+DELETE localhost:8080/boardgames/publishers/44
 
 ###
-PUT localhost:8080/users/update/1/username
+GET localhost:8080/boardgames/publishers
+
+
+// board games
+###
+POST localhost:8080/boardgames
+Content-Type: application/json
+
+{
+  "title": "chess",
+  "publisher": {
+    "id": 1,
+    "name": "MB"
+  },
+  "minPlayerCount": 2,
+  "maxPlayerCount": 2,
+  "minTime": 10,
+  "maxTime": 40
+}
+###
+POST localhost:8080/boardgames
+Content-Type: application/json
+
+{
+  "title": "check",
+  "publisher": {
+    "id": 3,
+    "name": "MB"
+  },
+  "minPlayerCount": 2
+}
+
+###
+GET localhost:8080/boardgames/5
+###
+GET localhost:8080/boardgames/25
+
+###
+PUT localhost:8080/boardgames
+Content-Type: application/json
+
+{
+  "id": 24,
+  "title": "Niagara Falls",
+  "publisher": {
+    "id": 3,
+    "name": "MB"
+  },
+  "minPlayerCount": 2,
+  "maxPlayerCount": 2,
+  "minTime": 10,
+  "maxTime": 40
+}
+###
+PUT localhost:8080/boardgames
+Content-Type: application/json
+
+{
+  "id": 21,
+  "title": "chess",
+  "publisher": {
+    "id": 1,
+    "name": "Hasbro"
+  },
+  "minPlayerCount": 2,
+  "maxPlayerCount": 2,
+  "minTime": 10,
+  "maxTime": 40
+}
+
+###
+DELETE localhost:8080/boardgames/200
+
+###
+GET localhost:8080/boardgames
+
+###
+GET localhost:8080/boardgames/find-title/Ships
+###
+GET localhost:8080/boardgames/find-title/clank
+
+###
+GET localhost:8080/boardgames/find-publisherName/Zoch
+###
+GET localhost:8080/boardgames/find-publisherName/MG
+
+###
+GET localhost:8080/boardgames/find-difficulty/NORMAL
+###
+GET localhost:8080/boardgames/find-difficulty/EXPERT
+
+###
+GET localhost:8080/boardgames/find-rating/7.5
+###
+GET localhost:8080/boardgames/find-rating/10
+
+###
+GET localhost:8080/boardgames/find-playerCount/3
+###
+GET localhost:8080/boardgames/find-playerCount/0
+
+###
+GET localhost:8080/boardgames/find-maxTime/60
+###
+GET localhost:8080/boardgames/find-maxTime/5
+
+###
+GET localhost:8080/boardgames/find-time/25
+###
+GET localhost:8080/boardgames/find-time/150
+
+###
+GET localhost:8080/boardgames/find-categoryName/classic
+###
+GET localhost:8080/boardgames/find-categoryName/funny
+
+###
+PUT localhost:8080/boardgames/update/22/description
 Content-Type: text/plain
 
-k
+Find all ships of your opponent and sink them.
+###
+PUT localhost:8080/boardgames/update/2/description
+Content-Type: text/plain
+
+Find all ships of your opponent and sink them.
+
+###
+PUT localhost:8080/boardgames/update/22/addCategory
+Content-Type: application/json
+
+5
+###
+PUT localhost:8080/boardgames/update/22/addCategory
+Content-Type: application/json
+
+100
+
+###
+PUT localhost:8080/boardgames/update/26/removeCategory
+Content-Type: application/json
+
+5
+###
+PUT localhost:8080/boardgames/update/20/removeCategory
+Content-Type: application/json
+
+5

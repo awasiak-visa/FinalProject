@@ -10,6 +10,7 @@ import pl.coderslab.user.UserService;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import static pl.coderslab.Role.ROLE_ADMIN;
 import static pl.coderslab.ValidationUtils.validationMessage;
 
 @RestController
@@ -63,7 +64,7 @@ public class PlayController {
 
     @PutMapping("")
     public ResponseEntity<String> putPlay(@RequestBody Play play, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             Set<ConstraintViolation<Play>> constraintViolations = validator.validate(play);
             if (constraintViolations.isEmpty()) {
                 playService.updatePlay(play);
@@ -78,7 +79,7 @@ public class PlayController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePlay(@PathVariable("id") Long id, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             playService.deletePlayById(id);
             return ResponseEntity.ok("Play deleted");
         } else {
@@ -132,7 +133,8 @@ public class PlayController {
             @PathVariable("boardGameTitle") String boardGameTitle,
             @PathVariable("publisherName") String publisherName) {
         try {
-            return ResponseEntity.ok(playService.findOpenPlaysByBoardGameTitleAndPublisherName(boardGameTitle, publisherName)
+            return ResponseEntity
+                    .ok(playService.findOpenPlaysByBoardGameTitleAndPublisherName(boardGameTitle, publisherName)
                     .stream().map(this::convertPlayToDTO).collect(Collectors.toList()));
         } catch (Exception e) {
             return ResponseEntity.status(404).body(null);
@@ -174,7 +176,7 @@ public class PlayController {
     @PutMapping("/update/{id}/addUser")
     public ResponseEntity<String> putPlayUsersAdd(@RequestBody Long userId, @PathVariable("id") Long id,
                                                   HttpSession session) {
-        if (session.getAttribute("userId").equals(userId)) {
+        if (session.getAttribute("userId") != null && session.getAttribute("userId").equals(userId)) {
             User user = userService.readUserById(userId);
             playService.updatePlayUsersAdd(user, id);
             return ResponseEntity.ok("Play updated");
@@ -186,7 +188,7 @@ public class PlayController {
     @PutMapping("/update/{id}/removeUser")
     public ResponseEntity<String> putPlayUsersRemove(@RequestBody Long userId, @PathVariable("id") Long id,
                                                      HttpSession session) {
-        if (session.getAttribute("userId").equals(userId)) {
+        if (session.getAttribute("userId") != null && session.getAttribute("userId").equals(userId)) {
             User user = userService.readUserById(userId);
             playService.updatePlayUsersRemove(user, id);
             return ResponseEntity.ok("Play updated");

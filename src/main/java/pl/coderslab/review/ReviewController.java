@@ -9,6 +9,8 @@ import pl.coderslab.user.UserService;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static pl.coderslab.Role.ROLE_ADMIN;
 import static pl.coderslab.ValidationUtils.validationMessage;
 
 @RestController
@@ -58,8 +60,9 @@ public class ReviewController {
 
     @PutMapping("")
     public ResponseEntity<String> putReview(@RequestBody Review review, HttpSession session) {
-        if (session.getAttribute("userId").equals(review.getUser().getId())
-                || session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if ((session.getAttribute("userId") != null
+                && session.getAttribute("userId").equals(review.getUser().getId()))
+                || (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN))) {
             Set<ConstraintViolation<Review>> constraintViolations = validator.validate(review);
             if (constraintViolations.isEmpty()) {
                 reviewService.updateReview(review);
@@ -74,8 +77,9 @@ public class ReviewController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteReview(@PathVariable("id") Long id, HttpSession session) {
-        if (session.getAttribute("userId").equals(reviewService.readReviewById(id).getUser().getId())
-                || session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if ((session.getAttribute("userId") != null
+                && session.getAttribute("userId").equals(reviewService.readReviewById(id).getUser().getId()))
+                || (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN))) {
             reviewService.deleteReviewById(id);
             return ResponseEntity.ok("Review deleted");
         } else {
@@ -130,7 +134,8 @@ public class ReviewController {
     @PutMapping("/update/{id}/rating")
     public ResponseEntity<String> putReviewRating(@RequestBody Integer rating, @PathVariable("id") Long id,
                                                   HttpSession session) {
-        if (session.getAttribute("userId").equals(reviewService.readReviewById(id).getUser().getId())) {
+        if (session.getAttribute("userId") != null
+                && session.getAttribute("userId").equals(reviewService.readReviewById(id).getUser().getId())) {
             Review review = reviewService.readReviewById(id);
             review.setRating(rating);
             Set<ConstraintViolation<Review>> constraintViolations = validator.validate(review);
@@ -148,8 +153,9 @@ public class ReviewController {
     @PutMapping("/update/{id}/title")
     public ResponseEntity<String> putReviewTitle(@RequestBody String title, @PathVariable("id") Long id,
                                                  HttpSession session) {
-        if (session.getAttribute("userId").equals(reviewService.readReviewById(id).getUser().getId())
-                || session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if ((session.getAttribute("userId") != null
+                && session.getAttribute("userId").equals(reviewService.readReviewById(id).getUser().getId()))
+                || (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN))) {
             Review review = reviewService.readReviewById(id);
             review.setTitle(title);
             Set<ConstraintViolation<Review>> constraintViolations = validator.validate(review);
@@ -167,8 +173,9 @@ public class ReviewController {
     @PutMapping("/update/{id}/description")
     public ResponseEntity<String> putReviewDescription(@RequestBody String description, @PathVariable("id") Long id,
                                                        HttpSession session) {
-        if (session.getAttribute("userId").equals(reviewService.readReviewById(id).getUser().getId())
-                || session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if ((session.getAttribute("userId") != null
+                && session.getAttribute("userId").equals(reviewService.readReviewById(id).getUser().getId()))
+                || (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN))) {
             Review review = reviewService.readReviewById(id);
             review.setDescription(description);
             Set<ConstraintViolation<Review>> constraintViolations = validator.validate(review);

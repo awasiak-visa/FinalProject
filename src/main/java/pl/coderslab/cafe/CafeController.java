@@ -11,6 +11,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import static pl.coderslab.Role.ROLE_ADMIN;
 import static pl.coderslab.ValidationUtils.validationMessage;
 
 @RestController
@@ -37,7 +38,7 @@ public class CafeController {
 
     @PostMapping("")
     public ResponseEntity<String> postCafe(@RequestBody Cafe cafe, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
             if (constraintViolations.isEmpty()) {
                 cafeService.createCafe(cafe);
@@ -61,7 +62,7 @@ public class CafeController {
 
     @PutMapping("")
     public ResponseEntity<String> putCafe(@RequestBody Cafe cafe, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
             if (constraintViolations.isEmpty()) {
                 cafeService.updateCafe(cafe);
@@ -76,7 +77,7 @@ public class CafeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCafe(@PathVariable("id") Long id, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             cafeService.deleteCafeById(id);
             return ResponseEntity.ok("Cafe deleted");
         } else {
@@ -140,8 +141,8 @@ public class CafeController {
     @GetMapping("/find-address/{address}")
     public ResponseEntity<List<CafeDTO>> getCafesByAddressContaining(@PathVariable("address") String address) {
         try {
-            return ResponseEntity.ok(cafeService.findCafesByAddressContaining(address).stream().map(this::convertCafeToDTO)
-                    .collect(Collectors.toList()));
+            return ResponseEntity.ok(cafeService.findCafesByAddressContaining(address).stream()
+                    .map(this::convertCafeToDTO).collect(Collectors.toList()));
         } catch (Exception e) {
             return ResponseEntity.status(404).body(null);
         }
@@ -151,7 +152,7 @@ public class CafeController {
     @PutMapping("/update/{id}/openingTime")
     public ResponseEntity<String> putCafeOpeningTime(@RequestBody LocalTime openingTime, @PathVariable("id") Long id,
                                                      HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             Cafe cafe = cafeService.readCafeById(id);
             cafe.setOpeningTime(openingTime);
             Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
@@ -169,7 +170,7 @@ public class CafeController {
     @PutMapping("/update/{id}/closingTime")
     public ResponseEntity<String> putCafeClosingTime(@RequestBody LocalTime closingTime, @PathVariable("id") Long id,
                                                      HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             Cafe cafe = cafeService.readCafeById(id);
             cafe.setClosingTime(closingTime);
             Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
@@ -187,7 +188,7 @@ public class CafeController {
     @PutMapping("/update/{id}/addBoardGame")
     public ResponseEntity<String> putCafeBoardGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id,
                                                        HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
             cafeService.updateCafeBoardGamesAdd(boardGame, id);
             return ResponseEntity.ok("Cafe updated");
@@ -199,7 +200,7 @@ public class CafeController {
     @PutMapping("/update/{id}/removeBoardGame")
     public ResponseEntity<String> putCafeBoardGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id,
                                                           HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
             cafeService.updateCafeBoardGamesRemove(boardGame, id);
             return ResponseEntity.ok("Cafe updated");

@@ -11,6 +11,7 @@ import pl.coderslab.boardgame.BoardGameService;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import static pl.coderslab.Role.ROLE_ADMIN;
 import static pl.coderslab.ValidationUtils.validationMessage;
 
 @RestController
@@ -41,7 +42,8 @@ public class UserController {
 
     @PostMapping("")
     public ResponseEntity<String> postUser(@RequestBody User user, HttpSession session) {
-        if (session.getAttribute("userId") == null || session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("userId") == null ||
+                (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN))) {
             Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
             if (constraintViolations.isEmpty()) {
                 if (!session.getAttribute("role").equals("ROLE_ADMIN")) {
@@ -68,10 +70,10 @@ public class UserController {
 
     @PutMapping("")
     public ResponseEntity<String> putUser(@RequestBody User user, HttpSession session) {
-        if (session.getAttribute("userId").equals(user.getId())) {
+        if (session.getAttribute("userId") != null && session.getAttribute("userId").equals(user.getId())) {
             Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
             if (constraintViolations.isEmpty()) {
-                if (!session.getAttribute("role").equals("ROLE_ADMIN")) {
+                if (!session.getAttribute("role").equals(ROLE_ADMIN)) {
                     user.setRole(Role.ROLE_USER);
                 }
                 userService.updateUser(user);
@@ -86,8 +88,8 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable("id") Long id, HttpSession session) {
-        if (session.getAttribute("userId").equals(id)
-                || session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if ((session.getAttribute("userId") != null && session.getAttribute("userId").equals(id))
+                || (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN))) {
             userService.deleteUserById(id);
             session.invalidate();
             return ResponseEntity.ok("User deleted");
@@ -141,7 +143,7 @@ public class UserController {
     @GetMapping("/role-admin")
     public ResponseEntity<List<UserDTO>> getUsersByRoleAdmin() {
         try {
-            return ResponseEntity.ok(userService.findUsersByRole(Role.ROLE_ADMIN).stream().map(this::convertUserToDTO)
+            return ResponseEntity.ok(userService.findUsersByRole(ROLE_ADMIN).stream().map(this::convertUserToDTO)
                     .collect(Collectors.toList()));
         } catch (Exception e) {
             return ResponseEntity.status(404).body(null);
@@ -151,7 +153,7 @@ public class UserController {
     // update
     @PutMapping("/update/{id}/username")
     public ResponseEntity<String> putUserUsername(@RequestBody String username, @PathVariable("id") Long id, HttpSession session) {
-        if (session.getAttribute("userId").equals(id)) {
+        if (session.getAttribute("userId") != null && session.getAttribute("userId").equals(id)) {
             User user = userService.readUserById(id);
             user.setUsername(username);
             Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
@@ -168,7 +170,7 @@ public class UserController {
 
     @PutMapping("/update/{id}/password")
     public ResponseEntity<String> putUserPassword(@RequestBody String password, @PathVariable("id") Long id, HttpSession session) {
-        if (session.getAttribute("userId").equals(id)) {
+        if (session.getAttribute("userId") != null && session.getAttribute("userId").equals(id)) {
             User user = userService.readUserById(id);
             user.setUsername(password);
             Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
@@ -186,7 +188,7 @@ public class UserController {
     @PutMapping("/update/{id}/addFavouriteGame")
     public ResponseEntity<String> putUserFavouriteGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id,
                                                            HttpSession session) {
-        if (session.getAttribute("userId").equals(id)) {
+        if (session.getAttribute("userId") != null && session.getAttribute("userId").equals(id)) {
             BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
             userService.updateUserFavouriteGamesAdd(boardGame, id);
             return ResponseEntity.ok("User updated");
@@ -198,7 +200,7 @@ public class UserController {
     @PutMapping("/update/{id}/removeFavouriteGame")
     public ResponseEntity<String> putUserFavouriteGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id,
                                                               HttpSession session) {
-        if (session.getAttribute("userId").equals(id)) {
+        if (session.getAttribute("userId") != null && session.getAttribute("userId").equals(id)) {
             BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
             userService.updateUserFavouriteGamesRemove(boardGame, id);
             return ResponseEntity.ok("User updated");
@@ -209,7 +211,7 @@ public class UserController {
 
     @PutMapping("/update/{id}/addWantedGame")
     public ResponseEntity<String> putUserWantedGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id, HttpSession session) {
-        if (session.getAttribute("userId").equals(id)) {
+        if (session.getAttribute("userId") != null && session.getAttribute("userId").equals(id)) {
             BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
             userService.updateUserWantedGamesAdd(boardGame, id);
             return ResponseEntity.ok("User updated");
@@ -221,7 +223,7 @@ public class UserController {
     @PutMapping("/update/{id}/removeWantedGame")
     public ResponseEntity<String> putUserWantedGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id,
                                                            HttpSession session) {
-        if (session.getAttribute("userId").equals(id)) {
+        if (session.getAttribute("userId") != null && session.getAttribute("userId").equals(id)) {
             BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
             userService.updateUserWantedGamesRemove(boardGame, id);
             return ResponseEntity.ok("User updated");

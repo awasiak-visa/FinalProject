@@ -1,7 +1,6 @@
 package pl.coderslab.cafe;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -31,6 +30,5 @@ public class Cafe {
     private String address;
     @ManyToMany
     @JoinTable(name = "cafes_boardgames")
-    @NotEmpty
     private List<BoardGame> boardGames;
 }

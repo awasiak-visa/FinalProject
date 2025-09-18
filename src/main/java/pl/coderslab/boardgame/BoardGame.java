@@ -1,12 +1,12 @@
 package pl.coderslab.boardgame;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.UniqueElements;
 import pl.coderslab.Difficulty;
 import pl.coderslab.boardgame.category.Category;
@@ -42,6 +42,7 @@ public class BoardGame {
     @ManyToMany
     @UniqueElements
     private List<Category> categories;
-    @Range(min = 1, max = 10)
+    @Min(0)
+    @Max(10)
     private Double rating;
 }

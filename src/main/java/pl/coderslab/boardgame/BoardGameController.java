@@ -13,6 +13,7 @@ import pl.coderslab.boardgame.publisher.PublisherDTO;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import static pl.coderslab.Role.ROLE_ADMIN;
 import static pl.coderslab.ValidationUtils.validationMessage;
 
 @RestController
@@ -35,7 +36,7 @@ public class BoardGameController {
 
     @PostMapping("/categories")
     public ResponseEntity<String> postCategory(@RequestBody Category category, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             Set<ConstraintViolation<Category>> constraintViolations = validator.validate(category);
             if (constraintViolations.isEmpty()) {
                 boardGameService.createCategory(category);
@@ -59,7 +60,7 @@ public class BoardGameController {
 
     @PutMapping("/categories")
     public ResponseEntity<String> putCategory(@RequestBody Category category, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             Set<ConstraintViolation<Category>> constraintViolations = validator.validate(category);
             if (constraintViolations.isEmpty()) {
                 boardGameService.updateCategory(category);
@@ -74,7 +75,7 @@ public class BoardGameController {
 
     @DeleteMapping("/categories/{id}")
     public ResponseEntity<String> deleteCategory(@PathVariable("id") Long id, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             boardGameService.deleteCategoryById(id);
             return ResponseEntity.ok("Category deleted");
         } else {
@@ -100,7 +101,7 @@ public class BoardGameController {
 
     @PostMapping("/publishers")
     public ResponseEntity<String> postPublisher(@RequestBody Publisher publisher, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             Set<ConstraintViolation<Publisher>> constraintViolations = validator.validate(publisher);
             if (constraintViolations.isEmpty()) {
                 boardGameService.createPublisher(publisher);
@@ -124,7 +125,7 @@ public class BoardGameController {
 
     @PutMapping("/publishers")
     public ResponseEntity<String> putPublisher(@RequestBody Publisher publisher, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             Set<ConstraintViolation<Publisher>> constraintViolations = validator.validate(publisher);
             if (constraintViolations.isEmpty()) {
                 boardGameService.updatePublisher(publisher);
@@ -139,7 +140,7 @@ public class BoardGameController {
 
     @DeleteMapping("/publishers/{id}")
     public ResponseEntity<String> deletePublisher(@PathVariable("id") Long id, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             boardGameService.deletePublisherById(id);
             return ResponseEntity.ok("Publisher deleted");
         } else {
@@ -170,7 +171,7 @@ public class BoardGameController {
 
     @PostMapping("")
     public ResponseEntity<String> postBoardGame(@RequestBody BoardGame boardGame, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             Set<ConstraintViolation<BoardGame>> constraintViolations = validator.validate(boardGame);
             if (constraintViolations.isEmpty()) {
                 boardGameService.createBoardGame(boardGame);
@@ -194,7 +195,7 @@ public class BoardGameController {
 
     @PutMapping("")
     public ResponseEntity<String> putBoardGame(@RequestBody BoardGame boardGame, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             Set<ConstraintViolation<BoardGame>> constraintViolations = validator.validate(boardGame);
             if (constraintViolations.isEmpty()) {
                 boardGameService.updateBoardGame(boardGame);
@@ -209,7 +210,7 @@ public class BoardGameController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBoardGame(@PathVariable("id") Long id, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             boardGameService.deleteBoardGameById(id);
             return ResponseEntity.ok("Board game deleted");
         } else {
@@ -316,7 +317,7 @@ public class BoardGameController {
     @PutMapping("/update/{id}/description")
     public ResponseEntity<String> putBoardGameDescription(@RequestBody String description, @PathVariable("id") Long id,
                                                           HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             boardGameService.updateBoardGameDescription(description, id);
             return ResponseEntity.ok("Board game updated");
         } else {
@@ -327,7 +328,7 @@ public class BoardGameController {
     @PutMapping("/update/{id}/addCategory")
     public ResponseEntity<String> putBoardGameCategoriesAdd(@RequestBody Long categoryId, @PathVariable("id") Long id,
                                                             HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             Category category = boardGameService.readCategoryById(categoryId);
             boardGameService.updateBoardGameCategoriesAdd(category, id);
             return ResponseEntity.ok("Board game updated");
@@ -339,7 +340,7 @@ public class BoardGameController {
     @PutMapping("/update/{id}/removeCategory")
     public ResponseEntity<String> putBoardGameCategoriesRemove(@RequestBody Long categoryId,
                                                                @PathVariable("id") Long id, HttpSession session) {
-        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+        if (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN)) {
             Category category = boardGameService.readCategoryById(categoryId);
             boardGameService.updateBoardGameCategoriesRemove(category, id);
             return ResponseEntity.ok("Board game updated");

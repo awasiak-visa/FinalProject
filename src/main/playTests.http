@@ -1,5 +1,239 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=IntelliJ IDEA
+###
+POST localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=ADMIN&password=password
 
 ###
+POST localhost:8080/logout
+
+###
+POST localhost:8080/plays
+Content-Type: application/json
+
+{
+  "boardGame": {
+    "id": 5,
+    "title": "In the air",
+    "publisherName": "MB",
+    "description": "land the plane",
+    "minPlayerCount": 2,
+    "maxPlayerCount": 2,
+    "minTime": 30,
+    "maxTime": 50,
+    "difficulty": "NORMAL",
+    "categoriesNames": [],
+    "rating": 0.0
+  },
+  "dateTime": "2025-12-08T17:30:00",
+  "cafe": {
+    "id": 5,
+    "name": "Parado Cafe",
+    "openingTime": "12:00:00",
+    "closingTime": "21:00:00",
+    "address": "ul.Kościuszki 17, Kraków",
+    "boardGames": [
+      {
+        "id": 3,
+        "title": "Ticket to Ride",
+        "publisher": {
+          "id": 2,
+          "name": "Hasbro"
+        },
+        "description": null,
+        "minPlayerCount": 2,
+        "maxPlayerCount": 5,
+        "minTime": 40,
+        "maxTime": 75,
+        "difficulty": "NORMAL",
+        "categories": [],
+        "rating": 0.0
+      },
+      {
+        "id": 5,
+        "title": "In the air",
+        "publisher": {
+          "id": 1,
+          "name": "MB"
+        },
+        "description": "land the plane",
+        "minPlayerCount": 2,
+        "maxPlayerCount": 2,
+        "minTime": 30,
+        "maxTime": 50,
+        "difficulty": "NORMAL",
+        "categories": [],
+        "rating": 0.0
+      }
+    ]
+  },
+  "users": [{
+    "id": 1,
+    "username": "ADMIN",
+    "email": "admin@gmail.com",
+    "password": "password",
+    "role": "ROLE_ADMIN",
+    "favouriteGamesInfo": [],
+    "wantedGamesInfo": []
+  }],
+  "status": "OPEN",
+  "freePlaces": 1
+}
+###
+POST localhost:8080/plays
+Content-Type: application/json
+
+{
+  "cafe": {
+  },
+  "status": "OPEN",
+  "freePlaces": 4
+}
+
+###
+GET localhost:8080/plays/7
+###
+GET localhost:8080/plays/102
+
+###
+PUT localhost:8080/plays
+Content-Type: application/json
+
+{
+  "id": 9,
+  "boardGame": {
+    "id": 5,
+    "title": "In the air",
+    "publisherName": "MB",
+    "description": "land the plane",
+    "minPlayerCount": 2,
+    "maxPlayerCount": 2,
+    "minTime": 30,
+    "maxTime": 50,
+    "difficulty": "NORMAL",
+    "categoriesNames": [],
+    "rating": 0.0
+  },
+  "dateTime": "2025-12-08T18:30:00",
+  "cafe": {
+    "id": 5,
+    "name": "Parado Cafe",
+    "openingTime": "12:00:00",
+    "closingTime": "21:00:00",
+    "address": "ul.Kościuszki 17, Kraków",
+    "boardGames": [
+      {
+        "id": 3,
+        "title": "Ticket to Ride",
+        "publisher": {
+          "id": 2,
+          "name": "Hasbro"
+        },
+        "description": null,
+        "minPlayerCount": 2,
+        "maxPlayerCount": 5,
+        "minTime": 40,
+        "maxTime": 75,
+        "difficulty": "NORMAL",
+        "categories": [],
+        "rating": 0.0
+      },
+      {
+        "id": 5,
+        "title": "In the air",
+        "publisher": {
+          "id": 1,
+          "name": "MB"
+        },
+        "description": "land the plane",
+        "minPlayerCount": 2,
+        "maxPlayerCount": 2,
+        "minTime": 30,
+        "maxTime": 50,
+        "difficulty": "NORMAL",
+        "categories": [],
+        "rating": 0.0
+      }
+    ]
+  },
+  "users": [{
+    "id": 1,
+    "username": "ADMIN",
+    "email": "admin@gmail.com",
+    "password": "password",
+    "role": "ROLE_ADMIN",
+    "favouriteGamesInfo": [],
+    "wantedGamesInfo": []
+  }],
+  "status": "OPEN",
+  "freePlaces": 1
+}
+###
+PUT localhost:8080/plays
+Content-Type: application/json
+
+{
+  "cafe": {
+  },
+  "status": "OPEN",
+  "freePlaces": 4
+}
+
+###
+DELETE localhost:8080/plays/7
+###
+DELETE localhost:8080/plays/105
+
+###
+GET localhost:8080/plays
+
+###
+GET localhost:8080/plays/find-userId/1
+###
+GET localhost:8080/plays/find-userId/2
+
+###
+GET localhost:8080/plays/open/find-cafeId/5
+###
+GET localhost:8080/plays/open/find-cafeId/55
+
+###
+GET localhost:8080/plays/open/find-boardGameId/3
+###
+GET localhost:8080/plays/open/find-boardGameId/1
+
+###
+GET localhost:8080/plays/open/find-boardGameTitle-publisherName/Ticket to Ride/Hasbro
+###
+GET localhost:8080/plays/open/find-boardGameTitle-publisherName/Tick/Hasbro
+
+###
+GET localhost:8080/plays/open/find-freePlaces/3
+###
+GET localhost:8080/plays/open/find-freePlaces/7
+
+###
+GET localhost:8080/plays/open
+
+###
+PUT localhost:8080/plays/update/8/addUser
+Content-Type: application/json
+
+1
+###
+PUT localhost:8080/plays/update/8/addUser
+Content-Type: application/json
+
+1
+
+###
+PUT localhost:8080/plays/update/8/removeUser
+Content-Type: application/json
+
+1
+###
+PUT localhost:8080/plays/update/8/removeUser
+Content-Type: application/json
+
+1
+
