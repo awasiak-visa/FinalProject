@@ -1,14 +1,16 @@
 package pl.coderslab.play;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.user.User;
 import pl.coderslab.user.UserService;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import static pl.coderslab.ValidationUtils.validationMessage;
 
 @RestController
 @RequestMapping("/plays")
@@ -35,94 +37,161 @@ public class PlayController {
     }
 
     @PostMapping("")
-    public void postPlay(@RequestBody Play play) {
-        Set<ConstraintViolation<Play>> constraintViolations = validator.validate(play);
-        if (constraintViolations.isEmpty()) {
-            playService.createPlay(play);
+    public ResponseEntity<String> postPlay(@RequestBody Play play, HttpSession session) {
+        if (session.getAttribute("userId") != null) {
+            Set<ConstraintViolation<Play>> constraintViolations = validator.validate(play);
+            if (constraintViolations.isEmpty()) {
+                play.setUsers(List.of(userService.readUserById((Long) session.getAttribute("userId"))));
+                playService.createPlay(play);
+                return ResponseEntity.ok("Play created");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @GetMapping("/{id}")
-    public PlayDTO getPlay(@PathVariable("id") Long id) {
-        return convertPlayToDTO(playService.readPlayById(id));
+    public ResponseEntity<PlayDTO> getPlay(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(convertPlayToDTO(playService.readPlayById(id)));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @PutMapping("")
-    public void putPlay(@RequestBody Play play) {
-        Set<ConstraintViolation<Play>> constraintViolations = validator.validate(play);
-        if (constraintViolations.isEmpty()) {
-            playService.updatePlay(play);
+    public ResponseEntity<String> putPlay(@RequestBody Play play, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Set<ConstraintViolation<Play>> constraintViolations = validator.validate(play);
+            if (constraintViolations.isEmpty()) {
+                playService.updatePlay(play);
+                return ResponseEntity.ok("Play updated");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @DeleteMapping("/{id}")
-    public void deletePlay(@PathVariable("id") Long id) {
-        playService.deletePlayById(id);
+    public ResponseEntity<String> deletePlay(@PathVariable("id") Long id, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            playService.deletePlayById(id);
+            return ResponseEntity.ok("Play deleted");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 
     @GetMapping("")
-    public List<PlayDTO> getAllPlays() {
-        return playService.readAllPlays().stream().map(this::convertPlayToDTO).collect(Collectors.toList());
+    public ResponseEntity<List<PlayDTO>> getAllPlays() {
+        try {
+            return ResponseEntity.ok(playService.readAllPlays().stream().map(this::convertPlayToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     // find
     @GetMapping("/find-userId/{userId}")
-    public List<PlayDTO> getPlaysByUserId(@PathVariable("userId") Long userId) {
-        return playService.findPlaysByUserId(userId).stream().map(this::convertPlayToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<PlayDTO>> getPlaysByUserId(@PathVariable("userId") Long userId) {
+        try {
+            return ResponseEntity.ok(playService.findPlaysByUserId(userId).stream().map(this::convertPlayToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/open/find-cafeId/{cafeId}")
-    public List<PlayDTO> getOpenPlaysByCafeId(@PathVariable("cafeId") Long cafeId) {
-        return playService.findOpenPlaysByCafeId(cafeId).stream().map(this::convertPlayToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<PlayDTO>> getOpenPlaysByCafeId(@PathVariable("cafeId") Long cafeId) {
+        try {
+            return ResponseEntity.ok(playService.findOpenPlaysByCafeId(cafeId).stream().map(this::convertPlayToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
-
     @GetMapping("/open/find-boardGameId/{boardGameId}")
-    public List<PlayDTO> getOpenPlaysByBoardGameId(@PathVariable("boardGameId") Long boardGameId) {
-        return playService.findOpenPlaysByBoardGameId(boardGameId).stream().map(this::convertPlayToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<PlayDTO>> getOpenPlaysByBoardGameId(@PathVariable("boardGameId") Long boardGameId) {
+        try {
+            return ResponseEntity.ok(playService.findOpenPlaysByBoardGameId(boardGameId).stream()
+                    .map(this::convertPlayToDTO).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/open/find-boardGameTitle-publisherName/{boardGameTitle}/{publisherName}")
-    public List<PlayDTO> getOpenPlaysByBoardGameTitleAndPublisherName(
+    public ResponseEntity<List<PlayDTO>> getOpenPlaysByBoardGameTitleAndPublisherName(
             @PathVariable("boardGameTitle") String boardGameTitle,
             @PathVariable("publisherName") String publisherName) {
-        return playService.findOpenPlaysByBoardGameTitleAndPublisherName(boardGameTitle, publisherName)
-                .stream().map(this::convertPlayToDTO).collect(Collectors.toList());
+        try {
+            return ResponseEntity.ok(playService.findOpenPlaysByBoardGameTitleAndPublisherName(boardGameTitle, publisherName)
+                    .stream().map(this::convertPlayToDTO).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/open/find-freePlaces/{freePlaces}")
-    public List<PlayDTO> getOpenPlaysByFreePlacesGreaterEqual(@PathVariable("freePlaces") Integer freePlaces) {
-        return playService.findOpenPlaysByFreePlacesGreaterThanEqual(freePlaces)
-                .stream().map(this::convertPlayToDTO).collect(Collectors.toList());
+    public ResponseEntity<List<PlayDTO>> getOpenPlaysByFreePlacesGreaterEqual(
+            @PathVariable("freePlaces") Integer freePlaces) {
+        try {
+            return ResponseEntity.ok(playService.findOpenPlaysByFreePlacesGreaterThanEqual(freePlaces)
+                    .stream().map(this::convertPlayToDTO).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/open")
-    public List<PlayDTO> getOpenPlays() {
-        return playService.findOpenPlays().stream().map(this::convertPlayToDTO).collect(Collectors.toList());
+    public ResponseEntity<List<PlayDTO>> getOpenPlays() {
+        try {
+            return ResponseEntity.ok(playService.findOpenPlays().stream().map(this::convertPlayToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     // update
     @PutMapping("/update-status")
-    public void putPlayStatusToPast() {
-        playService.updatePlayStatusToPast();
+    public ResponseEntity<String> putPlayStatusToPast() {
+        try {
+            playService.updatePlayStatusToPast();
+            return ResponseEntity.ok("Statuses updated");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error");
+        }
     }
 
     @PutMapping("/update/{id}/addUser")
-    public void putPlayUsersAdd(@RequestBody Long userId, @PathVariable("id") Long id) {
-        User user = userService.readUserById(userId);
-        playService.updatePlayUsersAdd(user, id);
+    public ResponseEntity<String> putPlayUsersAdd(@RequestBody Long userId, @PathVariable("id") Long id,
+                                                  HttpSession session) {
+        if (session.getAttribute("userId").equals(userId)) {
+            User user = userService.readUserById(userId);
+            playService.updatePlayUsersAdd(user, id);
+            return ResponseEntity.ok("Play updated");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 
     @PutMapping("/update/{id}/removeUser")
-    public void putPlayUsersRemove(@RequestBody Long userId, @PathVariable("id") Long id) {
-        User user = userService.readUserById(userId);
-        playService.updatePlayUsersRemove(user, id);
+    public ResponseEntity<String> putPlayUsersRemove(@RequestBody Long userId, @PathVariable("id") Long id,
+                                                     HttpSession session) {
+        if (session.getAttribute("userId").equals(userId)) {
+            User user = userService.readUserById(userId);
+            playService.updatePlayUsersRemove(user, id);
+            return ResponseEntity.ok("Play updated");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 }

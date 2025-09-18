@@ -1,8 +1,9 @@
 package pl.coderslab.boardgame;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.Difficulty;
 import pl.coderslab.boardgame.category.Category;
@@ -12,6 +13,7 @@ import pl.coderslab.boardgame.publisher.PublisherDTO;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import static pl.coderslab.ValidationUtils.validationMessage;
 
 @RestController
 @RequestMapping("/boardgames")
@@ -32,39 +34,62 @@ public class BoardGameController {
     }
 
     @PostMapping("/categories")
-    public void postCategory(@RequestBody Category category) {
-        Set<ConstraintViolation<Category>> constraintViolations = validator.validate(category);
-        if (constraintViolations.isEmpty()) {
-            boardGameService.createCategory(category);
+    public ResponseEntity<String> postCategory(@RequestBody Category category, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Set<ConstraintViolation<Category>> constraintViolations = validator.validate(category);
+            if (constraintViolations.isEmpty()) {
+                boardGameService.createCategory(category);
+                return ResponseEntity.ok("Category created");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @GetMapping("/categories/{id}")
-    public CategoryDTO getCategory(@PathVariable("id") Long id) {
-        return convertCategoryToDTO(boardGameService.readCategoryById(id));
+    public ResponseEntity<CategoryDTO> getCategory(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(convertCategoryToDTO(boardGameService.readCategoryById(id)));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @PutMapping("/categories")
-    public void putCategory(@RequestBody Category category) {
-        Set<ConstraintViolation<Category>> constraintViolations = validator.validate(category);
-        if (constraintViolations.isEmpty()) {
-            boardGameService.updateCategory(category);
+    public ResponseEntity<String> putCategory(@RequestBody Category category, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Set<ConstraintViolation<Category>> constraintViolations = validator.validate(category);
+            if (constraintViolations.isEmpty()) {
+                boardGameService.updateCategory(category);
+                return ResponseEntity.ok("Category updated");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @DeleteMapping("/categories/{id}")
-    public void deleteCategory(@PathVariable("id") Long id) {
-        boardGameService.deleteCategoryById(id);
+    public ResponseEntity<String> deleteCategory(@PathVariable("id") Long id, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            boardGameService.deleteCategoryById(id);
+            return ResponseEntity.ok("Category deleted");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 
     @GetMapping("/categories")
-    public List<CategoryDTO> getAllCategories() {
-        return boardGameService.readAllCategories().stream().map(this::convertCategoryToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
+        try {
+            return ResponseEntity.ok(boardGameService.readAllCategories().stream().map(this::convertCategoryToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
 
@@ -74,39 +99,62 @@ public class BoardGameController {
     }
 
     @PostMapping("/publishers")
-    public void postPublisher(@RequestBody Publisher publisher) {
-        Set<ConstraintViolation<Publisher>> constraintViolations = validator.validate(publisher);
-        if (constraintViolations.isEmpty()) {
-            boardGameService.createPublisher(publisher);
+    public ResponseEntity<String> postPublisher(@RequestBody Publisher publisher, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Set<ConstraintViolation<Publisher>> constraintViolations = validator.validate(publisher);
+            if (constraintViolations.isEmpty()) {
+                boardGameService.createPublisher(publisher);
+                return ResponseEntity.ok("Publisher created");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @GetMapping("/publishers/{id}")
-    public PublisherDTO getPublisher(@PathVariable("id") Long id) {
-        return convertPublisherToDTO(boardGameService.readPublisherById(id));
+    public ResponseEntity<PublisherDTO> getPublisher(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(convertPublisherToDTO(boardGameService.readPublisherById(id)));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @PutMapping("/publishers")
-    public void putPublisher(@RequestBody Publisher publisher) {
-        Set<ConstraintViolation<Publisher>> constraintViolations = validator.validate(publisher);
-        if (constraintViolations.isEmpty()) {
-            boardGameService.updatePublisher(publisher);
+    public ResponseEntity<String> putPublisher(@RequestBody Publisher publisher, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Set<ConstraintViolation<Publisher>> constraintViolations = validator.validate(publisher);
+            if (constraintViolations.isEmpty()) {
+                boardGameService.updatePublisher(publisher);
+                return ResponseEntity.ok("Publisher updated");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @DeleteMapping("/publishers/{id}")
-    public void deletePublisher(@PathVariable("id") Long id) {
-        boardGameService.deletePublisherById(id);
+    public ResponseEntity<String> deletePublisher(@PathVariable("id") Long id, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            boardGameService.deletePublisherById(id);
+            return ResponseEntity.ok("Publisher deleted");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 
     @GetMapping("/publishers")
-    public List<PublisherDTO> getAllPublishers() {
-        return boardGameService.readAllPublishers().stream().map(this::convertPublisherToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<PublisherDTO>> getAllPublishers() {
+        try {
+            return ResponseEntity.ok(boardGameService.readAllPublishers().stream().map(this::convertPublisherToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
 
@@ -121,105 +169,182 @@ public class BoardGameController {
     }
 
     @PostMapping("")
-    public void postBoardGame(@RequestBody BoardGame boardGame) {
-        Set<ConstraintViolation<BoardGame>> constraintViolations = validator.validate(boardGame);
-        if (constraintViolations.isEmpty()) {
-            boardGameService.createBoardGame(boardGame);
+    public ResponseEntity<String> postBoardGame(@RequestBody BoardGame boardGame, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Set<ConstraintViolation<BoardGame>> constraintViolations = validator.validate(boardGame);
+            if (constraintViolations.isEmpty()) {
+                boardGameService.createBoardGame(boardGame);
+                return ResponseEntity.ok("Board game created");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @GetMapping("/{id}")
-    public BoardGameDTO getBoardGame(@PathVariable("id") Long id) {
-        return convertBoardGameToDTO(boardGameService.readBoardGameById(id));
+    public ResponseEntity<BoardGameDTO> getBoardGame(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(convertBoardGameToDTO(boardGameService.readBoardGameById(id)));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @PutMapping("")
-    public void putBoardGame(@RequestBody BoardGame boardGame) {
-        Set<ConstraintViolation<BoardGame>> constraintViolations = validator.validate(boardGame);
-        if (constraintViolations.isEmpty()) {
-            boardGameService.updateBoardGame(boardGame);
+    public ResponseEntity<String> putBoardGame(@RequestBody BoardGame boardGame, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Set<ConstraintViolation<BoardGame>> constraintViolations = validator.validate(boardGame);
+            if (constraintViolations.isEmpty()) {
+                boardGameService.updateBoardGame(boardGame);
+                return ResponseEntity.ok("Board game updated");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBoardGame(@PathVariable("id") Long id) {
-        boardGameService.deleteBoardGameById(id);
+    public ResponseEntity<String> deleteBoardGame(@PathVariable("id") Long id, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            boardGameService.deleteBoardGameById(id);
+            return ResponseEntity.ok("Board game deleted");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 
     @GetMapping("")
-    public List<BoardGameDTO> getAllBoardGames() {
-        return boardGameService.readAllBoardGames().stream().map(this::convertBoardGameToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<BoardGameDTO>> getAllBoardGames() {
+        try {
+            return ResponseEntity.ok(boardGameService.readAllBoardGames().stream().map(this::convertBoardGameToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     // find
     @GetMapping("/find-title/{title}")
-    public List<BoardGameDTO> getBoardGamesByTitle(@PathVariable("title") String title) {
-        return boardGameService.findBoardGamesByTitle(title).stream().map(this::convertBoardGameToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<BoardGameDTO>> getBoardGamesByTitle(@PathVariable("title") String title) {
+        try {
+            return ResponseEntity.ok(boardGameService.findBoardGamesByTitle(title).stream().map(this::convertBoardGameToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/find-publisherName/{publisherName}")
-    public List<BoardGameDTO> getBoardGamesByPublisherName(@PathVariable("publisherName") String publisherName) {
-        return boardGameService.findBoardGamesByPublisherName(publisherName).stream()
-                .map(this::convertBoardGameToDTO).collect(Collectors.toList());
+    public ResponseEntity<List<BoardGameDTO>> getBoardGamesByPublisherName(
+            @PathVariable("publisherName") String publisherName) {
+        try {
+            return ResponseEntity.ok(boardGameService.findBoardGamesByPublisherName(publisherName).stream()
+                    .map(this::convertBoardGameToDTO).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/find-difficulty/{difficulty}")
-    public List<BoardGameDTO> getBoardGamesByDifficulty(@PathVariable("difficulty") Difficulty difficulty) {
-        return boardGameService.findBoardGamesByDifficulty(difficulty).stream()
-                .map(this::convertBoardGameToDTO).collect(Collectors.toList());
+    public ResponseEntity<List<BoardGameDTO>> getBoardGamesByDifficulty(
+            @PathVariable("difficulty") Difficulty difficulty) {
+        try {
+            return ResponseEntity.ok(boardGameService.findBoardGamesByDifficulty(difficulty).stream()
+                    .map(this::convertBoardGameToDTO).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/find-rating/{rating}")
-    public List<BoardGameDTO> getBoardGamesByRatingGreaterEqual(@PathVariable("rating") Double rating) {
-        return boardGameService.findBoardGamesByRatingGreaterThanEqual(rating).stream()
-                .map(this::convertBoardGameToDTO).collect(Collectors.toList());
+    public ResponseEntity<List<BoardGameDTO>> getBoardGamesByRatingGreaterEqual(@PathVariable("rating") Double rating) {
+        try {
+            return ResponseEntity.ok(boardGameService.findBoardGamesByRatingGreaterThanEqual(rating).stream()
+                    .map(this::convertBoardGameToDTO).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/find-playerCount/{playerCount}")
-    public List<BoardGameDTO> getBoardGamesByPlayerCount(@PathVariable("playerCount") Integer playerCount) {
-        return boardGameService.findBoardGamesByPlayerCountBetweenMinAndMaxPlayerCount(playerCount).stream()
-                .map(this::convertBoardGameToDTO).collect(Collectors.toList());
+    public ResponseEntity<List<BoardGameDTO>> getBoardGamesByPlayerCount(
+            @PathVariable("playerCount") Integer playerCount) {
+        try {
+            return ResponseEntity.ok(boardGameService.findBoardGamesByPlayerCountBetweenMinAndMaxPlayerCount(playerCount)
+                    .stream().map(this::convertBoardGameToDTO).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/find-maxTime/{maxTime}")
-    public List<BoardGameDTO> getBoardGamesByMaxTimeLessEqual(@PathVariable("maxTime") Integer maxTime) {
-        return boardGameService.findBoardGamesByMaxTimeLessThanEqual(maxTime).stream()
-                .map(this::convertBoardGameToDTO).collect(Collectors.toList());
+    public ResponseEntity<List<BoardGameDTO>> getBoardGamesByMaxTimeLessEqual(@PathVariable("maxTime") Integer maxTime) {
+        try {
+            return ResponseEntity.ok(boardGameService.findBoardGamesByMaxTimeLessThanEqual(maxTime).stream()
+                    .map(this::convertBoardGameToDTO).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/find-time/{time}")
-    public List<BoardGameDTO> getBoardGamesByTime(@PathVariable("time") Integer time) {
-        return boardGameService.findBoardGamesByTimeBetweenMinAndMaxTime(time).stream()
-                .map(this::convertBoardGameToDTO).collect(Collectors.toList());
+    public ResponseEntity<List<BoardGameDTO>> getBoardGamesByTime(@PathVariable("time") Integer time) {
+        try {
+            return ResponseEntity.ok(boardGameService.findBoardGamesByTimeBetweenMinAndMaxTime(time).stream()
+                    .map(this::convertBoardGameToDTO).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/find-categoryName/{categoryName}")
-    public List<BoardGameDTO> getBoardGamesByCategoryName(@PathVariable("categoryName") String categoryName) {
-        return boardGameService.findBoardGamesByCategoryName(categoryName).stream()
-                .map(this::convertBoardGameToDTO).collect(Collectors.toList());
+    public ResponseEntity<List<BoardGameDTO>> getBoardGamesByCategoryName(
+            @PathVariable("categoryName") String categoryName) {
+        try {
+            return ResponseEntity.ok(boardGameService.findBoardGamesByCategoryName(categoryName).stream()
+                    .map(this::convertBoardGameToDTO).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     // update
     @PutMapping("/update/{id}/description")
-    public void putBoardGameDescription(@RequestBody String description, @PathVariable("id") Long id) {
-        boardGameService.updateBoardGameDescription(description, id);
+    public ResponseEntity<String> putBoardGameDescription(@RequestBody String description, @PathVariable("id") Long id,
+                                                          HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            boardGameService.updateBoardGameDescription(description, id);
+            return ResponseEntity.ok("Board game updated");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 
     @PutMapping("/update/{id}/addCategory")
-    public void putBoardGameCategoriesAdd(@RequestBody Long categoryId, @PathVariable("id") Long id) {
-        Category category = boardGameService.readCategoryById(categoryId);
-        boardGameService.updateBoardGameCategoriesAdd(category, id);
+    public ResponseEntity<String> putBoardGameCategoriesAdd(@RequestBody Long categoryId, @PathVariable("id") Long id,
+                                                            HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Category category = boardGameService.readCategoryById(categoryId);
+            boardGameService.updateBoardGameCategoriesAdd(category, id);
+            return ResponseEntity.ok("Board game updated");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 
     @PutMapping("/update/{id}/removeCategory")
-    public void putBoardGameCategoriesRemove(@RequestBody Long categoryId, @PathVariable("id") Long id) {
-        Category category = boardGameService.readCategoryById(categoryId);
-        boardGameService.updateBoardGameCategoriesRemove(category, id);
+    public ResponseEntity<String> putBoardGameCategoriesRemove(@RequestBody Long categoryId,
+                                                               @PathVariable("id") Long id, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Category category = boardGameService.readCategoryById(categoryId);
+            boardGameService.updateBoardGameCategoriesRemove(category, id);
+            return ResponseEntity.ok("Board game updated");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 }

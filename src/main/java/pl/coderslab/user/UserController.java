@@ -1,8 +1,9 @@
 package pl.coderslab.user;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.Role;
 import pl.coderslab.boardgame.BoardGame;
@@ -10,6 +11,7 @@ import pl.coderslab.boardgame.BoardGameService;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import static pl.coderslab.ValidationUtils.validationMessage;
 
 @RestController
 @RequestMapping("/users")
@@ -38,111 +40,193 @@ public class UserController {
     }
 
     @PostMapping("")
-    public void postUser(@RequestBody User user) {
-        Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
-        if (constraintViolations.isEmpty()) {
-            userService.createUser(user);
+    public ResponseEntity<String> postUser(@RequestBody User user, HttpSession session) {
+        if (session.getAttribute("userId") == null || session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
+            if (constraintViolations.isEmpty()) {
+                if (!session.getAttribute("role").equals("ROLE_ADMIN")) {
+                    user.setRole(Role.ROLE_USER);
+                }
+                userService.createUser(user);
+                return ResponseEntity.ok("User created");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @GetMapping("/{id}")
-    public UserDTO getUser(@PathVariable("id") Long id) {
-        return convertUserToDTO(userService.readUserById(id));
+    public ResponseEntity<UserDTO> getUser(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(convertUserToDTO(userService.readUserById(id)));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @PutMapping("")
-    public void putUser(@RequestBody User user) {
-        Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
-        if (constraintViolations.isEmpty()) {
-            userService.updateUser(user);
+    public ResponseEntity<String> putUser(@RequestBody User user, HttpSession session) {
+        if (session.getAttribute("userId").equals(user.getId())) {
+            Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
+            if (constraintViolations.isEmpty()) {
+                if (!session.getAttribute("role").equals("ROLE_ADMIN")) {
+                    user.setRole(Role.ROLE_USER);
+                }
+                userService.updateUser(user);
+                return ResponseEntity.ok("User updated");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable("id") Long id) {
-        userService.deleteUserById(id);
+    public ResponseEntity<String> deleteUser(@PathVariable("id") Long id, HttpSession session) {
+        if (session.getAttribute("userId").equals(id)
+                || session.getAttribute("role").equals("ROLE_ADMIN")) {
+            userService.deleteUserById(id);
+            session.invalidate();
+            return ResponseEntity.ok("User deleted");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 
     @GetMapping("")
-    public List<UserDTO> getAllUsers() {
-        return userService.readAllUsers().stream().map(this::convertUserToDTO).collect(Collectors.toList());
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        try {
+            return ResponseEntity.ok(userService.readAllUsers().stream().map(this::convertUserToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     // find
     @GetMapping("/find-username/{username}")
-    public List<UserDTO> getUsersByUsernameContaining(@PathVariable("username") String username) {
-        return userService.findUsersByUsernameContaining(username).stream().map(this::convertUserToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<UserDTO>> getUsersByUsernameContaining(@PathVariable("username") String username) {
+        try {
+            return ResponseEntity.ok(userService.findUsersByUsernameContaining(username).stream()
+                    .map(this::convertUserToDTO).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/find-favouriteGameId/{favouriteGameId}")
-    public List<UserDTO> getUsersByFavouriteGameId(@PathVariable("favouriteGameId") Long favouriteGameId) {
-        return userService.findUsersByFavouriteGameId(favouriteGameId).stream().map(this::convertUserToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<UserDTO>> getUsersByFavouriteGameId(
+            @PathVariable("favouriteGameId") Long favouriteGameId) {
+        try {
+            return ResponseEntity.ok(userService.findUsersByFavouriteGameId(favouriteGameId).stream().map(this::convertUserToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/role-user")
-    public List<UserDTO> getUsersByRoleUser() {
-        return userService.findUsersByRole(Role.ROLE_USER).stream().map(this::convertUserToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<UserDTO>> getUsersByRoleUser() {
+        try {
+            return ResponseEntity.ok(userService.findUsersByRole(Role.ROLE_USER).stream().map(this::convertUserToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/role-admin")
-    public List<UserDTO> getUsersByRoleAdmin() {
-        return userService.findUsersByRole(Role.ROLE_ADMIN).stream().map(this::convertUserToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<UserDTO>> getUsersByRoleAdmin() {
+        try {
+            return ResponseEntity.ok(userService.findUsersByRole(Role.ROLE_ADMIN).stream().map(this::convertUserToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     // update
     @PutMapping("/update/{id}/username")
-    public void putUserUsername(@RequestBody String username, @PathVariable("id") Long id) {
-        User user = userService.readUserById(id);
-        user.setUsername(username);
-        Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
-        if (constraintViolations.isEmpty()) {
-            userService.updateUserUsername(username, id);
+    public ResponseEntity<String> putUserUsername(@RequestBody String username, @PathVariable("id") Long id, HttpSession session) {
+        if (session.getAttribute("userId").equals(id)) {
+            User user = userService.readUserById(id);
+            user.setUsername(username);
+            Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
+            if (constraintViolations.isEmpty()) {
+                userService.updateUserUsername(username, id);
+                return ResponseEntity.ok("User updated");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @PutMapping("/update/{id}/password")
-    public void putUserPassword(@RequestBody String password, @PathVariable("id") Long id) {
-        User user = userService.readUserById(id);
-        user.setUsername(password);
-        Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
-        if (constraintViolations.isEmpty()) {
-            userService.updateUserPassword(password, id);
+    public ResponseEntity<String> putUserPassword(@RequestBody String password, @PathVariable("id") Long id, HttpSession session) {
+        if (session.getAttribute("userId").equals(id)) {
+            User user = userService.readUserById(id);
+            user.setUsername(password);
+            Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
+            if (constraintViolations.isEmpty()) {
+                userService.updateUserPassword(password, id);
+                return ResponseEntity.ok("User updated");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @PutMapping("/update/{id}/addFavouriteGame")
-    public void putUserFavouriteGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
-        BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
-        userService.updateUserFavouriteGamesAdd(boardGame, id);
+    public ResponseEntity<String> putUserFavouriteGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id,
+                                                           HttpSession session) {
+        if (session.getAttribute("userId").equals(id)) {
+            BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
+            userService.updateUserFavouriteGamesAdd(boardGame, id);
+            return ResponseEntity.ok("User updated");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 
     @PutMapping("/update/{id}/removeFavouriteGame")
-    public void putUserFavouriteGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
-        BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
-        userService.updateUserFavouriteGamesRemove(boardGame, id);
+    public ResponseEntity<String> putUserFavouriteGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id,
+                                                              HttpSession session) {
+        if (session.getAttribute("userId").equals(id)) {
+            BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
+            userService.updateUserFavouriteGamesRemove(boardGame, id);
+            return ResponseEntity.ok("User updated");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 
     @PutMapping("/update/{id}/addWantedGame")
-    public void putUserWantedGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
-        BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
-        userService.updateUserWantedGamesAdd(boardGame, id);
+    public ResponseEntity<String> putUserWantedGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id, HttpSession session) {
+        if (session.getAttribute("userId").equals(id)) {
+            BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
+            userService.updateUserWantedGamesAdd(boardGame, id);
+            return ResponseEntity.ok("User updated");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 
     @PutMapping("/update/{id}/removeWantedGame")
-    public void putUserWantedGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
-        BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
-        userService.updateUserWantedGamesRemove(boardGame, id);
+    public ResponseEntity<String> putUserWantedGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id,
+                                                           HttpSession session) {
+        if (session.getAttribute("userId").equals(id)) {
+            BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
+            userService.updateUserWantedGamesRemove(boardGame, id);
+            return ResponseEntity.ok("User updated");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 }

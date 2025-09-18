@@ -1,8 +1,9 @@
 package pl.coderslab.cafe;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.boardgame.BoardGame;
 import pl.coderslab.boardgame.BoardGameService;
@@ -10,6 +11,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import static pl.coderslab.ValidationUtils.validationMessage;
 
 @RestController
 @RequestMapping("/cafes")
@@ -34,107 +36,175 @@ public class CafeController {
 
 
     @PostMapping("")
-    public void postCafe(@RequestBody Cafe cafe) {
-        Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
-        if (constraintViolations.isEmpty()) {
-            cafeService.createCafe(cafe);
+    public ResponseEntity<String> postCafe(@RequestBody Cafe cafe, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
+            if (constraintViolations.isEmpty()) {
+                cafeService.createCafe(cafe);
+                return ResponseEntity.ok("Cafe created");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @GetMapping("/{id}")
-    public CafeDTO getCafe(@PathVariable("id") Long id) {
-        return convertCafeToDTO(cafeService.readCafeById(id));
+    public ResponseEntity<CafeDTO> getCafe(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(convertCafeToDTO(cafeService.readCafeById(id)));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @PutMapping("")
-    public void putCafe(@RequestBody Cafe cafe) {
-        Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
-        if (constraintViolations.isEmpty()) {
-            cafeService.updateCafe(cafe);
+    public ResponseEntity<String> putCafe(@RequestBody Cafe cafe, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
+            if (constraintViolations.isEmpty()) {
+                cafeService.updateCafe(cafe);
+                return ResponseEntity.ok("Cafe updated");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCafe(@PathVariable("id") Long id) {
-        cafeService.deleteCafeById(id);
+    public ResponseEntity<String> deleteCafe(@PathVariable("id") Long id, HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            cafeService.deleteCafeById(id);
+            return ResponseEntity.ok("Cafe deleted");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 
     @GetMapping("")
-    public List<CafeDTO> getAllCafes() {
-        return cafeService.readAllCafes().stream().map(this::convertCafeToDTO).collect(Collectors.toList());
+    public ResponseEntity<List<CafeDTO>> getAllCafes() {
+        try {
+            return ResponseEntity.ok(cafeService.readAllCafes().stream().map(this::convertCafeToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     // find
     @GetMapping("/find-name/{name}")
-    public List<CafeDTO> getCafesByName(@PathVariable("name") String name) {
-        return cafeService.findCafesByName(name).stream().map(this::convertCafeToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<CafeDTO>> getCafesByName(@PathVariable("name") String name) {
+        try {
+            return ResponseEntity.ok(cafeService.findCafesByName(name).stream().map(this::convertCafeToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/find-boardGameId/{boardGameId}")
-    public List<CafeDTO> getCafesByBoardGameId(@PathVariable("boardGameId") Long boardGameId) {
-        return cafeService.findCafesByBoardGameId(boardGameId).stream().map(this::convertCafeToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<CafeDTO>> getCafesByBoardGameId(@PathVariable("boardGameId") Long boardGameId) {
+        try {
+            return ResponseEntity.ok(cafeService.findCafesByBoardGameId(boardGameId).stream().map(this::convertCafeToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/find-boardGameTitle-publisherName/{boardGameTitle}/{publisherName}")
-    public List<CafeDTO> getCafesByBoardGameTitleAndPublisherName(
+    public ResponseEntity<List<CafeDTO>> getCafesByBoardGameTitleAndPublisherName(
             @PathVariable("boardGameTitle") String boardGameTitle,
             @PathVariable("publisherName") String publisherName) {
-        return cafeService.findCafesByBoardGameTitleAndPublisherName(boardGameTitle, publisherName)
-                .stream().map(this::convertCafeToDTO).collect(Collectors.toList());
+        try {
+            return ResponseEntity.ok(cafeService.findCafesByBoardGameTitleAndPublisherName(boardGameTitle, publisherName)
+                    .stream().map(this::convertCafeToDTO).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/find-time/{time}")
-    public List<CafeDTO> getCafesByTime(@PathVariable("time") LocalTime time) {
-        return cafeService.findCafesByTimeBetweenOpeningAndClosingTime(time).stream().map(this::convertCafeToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<CafeDTO>> getCafesByTime(@PathVariable("time") LocalTime time) {
+        try {
+            return ResponseEntity.ok(cafeService.findCafesByTimeBetweenOpeningAndClosingTime(time).stream()
+                    .map(this::convertCafeToDTO).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/find-address/{address}")
-    public List<CafeDTO> getCafesByAddressContaining(@PathVariable("address") String address) {
-        return cafeService.findCafesByAddressContaining(address).stream().map(this::convertCafeToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<CafeDTO>> getCafesByAddressContaining(@PathVariable("address") String address) {
+        try {
+            return ResponseEntity.ok(cafeService.findCafesByAddressContaining(address).stream().map(this::convertCafeToDTO)
+                    .collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     // update
     @PutMapping("/update/{id}/openingTime")
-    public void putCafeOpeningTime(@RequestBody LocalTime openingTime, @PathVariable("id") Long id) {
-        Cafe cafe = cafeService.readCafeById(id);
-        cafe.setOpeningTime(openingTime);
-        Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
-        if (constraintViolations.isEmpty()) {
-            cafeService.updateCafeOpeningTime(openingTime, id);
+    public ResponseEntity<String> putCafeOpeningTime(@RequestBody LocalTime openingTime, @PathVariable("id") Long id,
+                                                     HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Cafe cafe = cafeService.readCafeById(id);
+            cafe.setOpeningTime(openingTime);
+            Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
+            if (constraintViolations.isEmpty()) {
+                cafeService.updateCafeOpeningTime(openingTime, id);
+                return ResponseEntity.ok("Cafe updated");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @PutMapping("/update/{id}/closingTime")
-    public void putCafeClosingTime(@RequestBody LocalTime closingTime, @PathVariable("id") Long id) {
-        Cafe cafe = cafeService.readCafeById(id);
-        cafe.setClosingTime(closingTime);
-        Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
-        if (constraintViolations.isEmpty()) {
-            cafeService.updateCafeClosingTime(closingTime, id);
+    public ResponseEntity<String> putCafeClosingTime(@RequestBody LocalTime closingTime, @PathVariable("id") Long id,
+                                                     HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            Cafe cafe = cafeService.readCafeById(id);
+            cafe.setClosingTime(closingTime);
+            Set<ConstraintViolation<Cafe>> constraintViolations = validator.validate(cafe);
+            if (constraintViolations.isEmpty()) {
+                cafeService.updateCafeClosingTime(closingTime, id);
+                return ResponseEntity.ok("Cafe updated");
+            } else {
+                return ResponseEntity.status(400).body(validationMessage(constraintViolations));
+            }
         } else {
-            throw new ConstraintViolationException(constraintViolations);
+            return ResponseEntity.status(403).body("Forbidden");
         }
     }
 
     @PutMapping("/update/{id}/addBoardGame")
-    public void putCafeBoardGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
-        BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
-        cafeService.updateCafeBoardGamesAdd(boardGame, id);
+    public ResponseEntity<String> putCafeBoardGamesAdd(@RequestBody Long boardGameId, @PathVariable("id") Long id,
+                                                       HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
+            cafeService.updateCafeBoardGamesAdd(boardGame, id);
+            return ResponseEntity.ok("Cafe updated");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 
     @PutMapping("/update/{id}/removeBoardGame")
-    public void putCafeBoardGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id) {
-        BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
-        cafeService.updateCafeBoardGamesRemove(boardGame, id);
+    public ResponseEntity<String> putCafeBoardGamesRemove(@RequestBody Long boardGameId, @PathVariable("id") Long id,
+                                                          HttpSession session) {
+        if (session.getAttribute("role").equals("ROLE_ADMIN")) {
+            BoardGame boardGame = boardGameService.readBoardGameById(boardGameId);
+            cafeService.updateCafeBoardGamesRemove(boardGame, id);
+            return ResponseEntity.ok("Cafe updated");
+        } else {
+            return ResponseEntity.status(403).body("Forbidden");
+        }
     }
 }

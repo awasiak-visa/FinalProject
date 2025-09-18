@@ -30,7 +30,7 @@ public class ReviewService {
             throw new RuntimeException("Review not found.");
         }
         reviewRepository.update(review.getBoardGame(), review.getRating(), review.getTitle(), review.getDescription(),
-                review.getUser(), review.getId());
+                review.getId());
         Double averageRating = reviewRepository.findAverageRatingByBoardGameId(review.getBoardGame().getId());
         boardGameRepository.updateRating(averageRating, review.getBoardGame().getId());
     }

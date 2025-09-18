@@ -15,8 +15,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Modifying
     @Transactional
-    @Query("update Review r set r.boardGame=?1, r.rating=?2, r.title=?3, r.description=?4, r.user=?5 where r.id=?6")
-    void update(BoardGame boardGame, Integer rating, String title, String description, User user, Long id);
+    @Query("update Review r set r.boardGame=?1, r.rating=?2, r.title=?3, r.description=?4 where r.id=?5")
+    void update(BoardGame boardGame, Integer rating, String title, String description, Long id);
 
     // finding queries
     List<Review> findByBoardGameId(Long boardGameId);
