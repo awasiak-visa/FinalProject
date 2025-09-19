@@ -46,7 +46,7 @@ public class UserController {
                 (session.getAttribute("role") != null && session.getAttribute("role").equals(ROLE_ADMIN))) {
             Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
             if (constraintViolations.isEmpty()) {
-                if (!session.getAttribute("role").equals("ROLE_ADMIN")) {
+                if (!session.getAttribute("role").equals(ROLE_ADMIN)) {
                     user.setRole(Role.ROLE_USER);
                 }
                 userService.createUser(user);
