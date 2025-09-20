@@ -7,11 +7,11 @@ Wyszukiwanie zasobów jest dostępne dla wszystkich użytkowników bez konieczno
 Administratorzy zarządzają grami oraz kawiarniami.
 
 Dostęp do zasobów znajduje się pod adresami:
-* gry planszowe: localhost:8080/boardgames
-* kawiarnie: localhost:8080/cafes
-* rozgrywki: localhost:8080/plays
-* recenzje: localhost:8080/reviews
-* użytkownicy: localhost:8080/users
+* gry planszowe: `localhost:8080/boardgames`
+* kawiarnie: `localhost:8080/cafes`
+* rozgrywki: `localhost:8080/plays`
+* recenzje: `localhost:8080/reviews`
+* użytkownicy: `localhost:8080/users`
 
 Logowanie:
 
